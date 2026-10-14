@@ -80,6 +80,25 @@ window.PROFILE = {
       url: "https://www.linkedin.com/in/ca-umang-mehta/recent-activity/all/" }
   ],
 
+  // Free tools hosted on the site. Put each tool's HTML file in the tools/ folder.
+  // The Tools section stays hidden while this list is empty.
+  tools: [
+    { tag: "Income Tax", name: "IT Act Section Mapping 1961 ↔ 2025", file: "tools/it-act-mapping.html",
+      description: "Look up how every section of the Income-tax Act, 1961 maps to the new Income-tax Act, 2025, and back." },
+    { tag: "Income Tax", name: "Tax Audit Applicability", file: "tools/tax-audit-applicability.html",
+      description: "Check whether a tax audit under section 44AB applies, based on turnover, receipts and presumptive scheme." },
+    { tag: "TDS / TCS", name: "TDS / TCS Challan Generator", file: "tools/tds-challan-generator.html",
+      description: "Prepare an ITNS 281 challan with section mapping across the 1961 and 2025 Acts, ready to print as PDF." },
+    { tag: "GST", name: "GSTR-2A vs Books Reconciler", file: "tools/gstr2a-reconciler.html",
+      description: "Match your purchase register against the GSTR-2A B2B download and see mismatches party-wise." },
+    { tag: "Company Law", name: "Companies Act Applicability Analyser", file: "tools/companies-act-applicability.html",
+      description: "See which Companies Act, 2013 provisions apply to a company based on its size, type and thresholds." },
+    { tag: "Banking", name: "Bank Statement Converter", file: "tools/bank-statement-converter.html",
+      description: "Convert bank statement PDFs from any Indian bank, native or scanned, into Excel or CSV." },
+    { tag: "Productivity", name: "PDF Suite", file: "tools/pdf-suite.html",
+      description: "Merge, split, compress, rotate and convert PDFs, entirely offline in your browser." }
+  ],
+
   channels: [
     { name: "Excelenation – by Umang Mehta", tagline: "Let's make Excel use smart. Practical Excel tips and shortcuts.",
       url: "https://whatsapp.com/channel/0029Vb82ujQ0lwgov8UKqF3l" },

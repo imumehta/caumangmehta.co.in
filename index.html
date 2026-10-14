@@ -119,6 +119,12 @@
   .list-item small{color:var(--muted);font-size:.88rem}
   .list-item .yr{font-size:.85rem;color:var(--muted);white-space:nowrap}
 
+  /* tools */
+  .tool{display:flex;flex-direction:column;text-decoration:none;color:inherit}
+  .tool .tl-date{margin-bottom:8px}
+  .tool p{flex:1}
+  .tool span{margin-top:16px;font-weight:600;color:var(--accent);font-size:.92rem}
+
   /* channels + posts */
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
   .channel{display:flex;gap:18px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px;text-decoration:none;transition:transform .2s,box-shadow .2s}
@@ -174,6 +180,7 @@
       <a href="#experience">Experience</a>
       <a href="#moments">Moments</a>
       <a href="#credentials">Credentials</a>
+      <a href="#tools" id="navTools" hidden>Tools</a>
       <a href="#community">Community</a>
       <a href="#contact">Contact</a>
     </div>
@@ -279,7 +286,14 @@
   </div>
 </section>
 
-<section id="community" class="alt">
+<section id="tools" class="alt" hidden>
+  <div class="wrap">
+    <div class="sec-head"><div class="eyebrow">Tools</div><h2>Free professional tools</h2><p>Browser-based tools I've built for everyday compliance work. They run entirely in your browser, and no data is uploaded.</p></div>
+    <div class="grid3" id="toolList"></div>
+  </div>
+</section>
+
+<section id="community">
   <div class="wrap">
     <div class="sec-head"><div class="eyebrow">Community</div><h2>WhatsApp channels</h2><p>Follow along for practical updates on Excel, taxation, audit, finance and AI, delivered straight to WhatsApp.</p></div>
     <div class="grid2" id="channels"></div>
@@ -350,6 +364,18 @@
       <div class="wa">${ICONS.whatsapp}</div>
       <div><h3>${esc(c.name)}</h3><p>${esc(c.tagline)}</p><span>Follow on WhatsApp →</span></div>
     </a>`).join("");
+
+  if (P.tools && P.tools.length) {
+    $("tools").hidden = false;
+    $("navTools").hidden = false;
+    $("toolList").innerHTML = P.tools.map((t) => `
+      <a class="svc tool" href="${esc(t.file)}" target="_blank" rel="noopener">
+        <div class="tl-date">${esc(t.tag || "Tool")}</div>
+        <h3>${esc(t.name)}</h3>
+        <p>${esc(t.description)}</p>
+        <span>Open tool →</span>
+      </a>`).join("");
+  }
 
   $("posts").innerHTML = P.posts.map((p) => `
     <div class="post">
