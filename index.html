@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CA Umang Mehta | Chartered Accountant, Jamnagar</title>
+<meta name="description" content="CA Umang Mehta, Chartered Accountant and Partner at BRS & Associates, Jamnagar. Audit, financial governance, risk management and business advisory.">
+<meta property="og:title" content="CA Umang Mehta | Chartered Accountant">
+<meta property="og:description" content="Partner at BRS & Associates, Jamnagar. Audit, governance, risk and advisory.">
+<meta property="og:image" content="https://caumangmehta.co.in/img/headshot.webp">
+<meta property="og:url" content="https://caumangmehta.co.in/">
+<link rel="icon" href="img/headshot.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f7f5f0; --surface:#ffffff; --ink:#14213d; --text:#2b3245; --muted:#6b7180;
+    --line:#e3dfd5; --accent:#a4161a; --accent-soft:#f6e7e4; --navy:#14213d; --wa:#25d366;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;font-size:16px}
+  a{color:inherit}
+  img{max-width:100%}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  h1,h2,h3{font-family:Fraunces,Georgia,serif;color:var(--ink);font-weight:600;line-height:1.2}
+  .eyebrow{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:14px}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:10;background:rgba(247,245,240,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{font-family:Fraunces,serif;font-weight:600;color:var(--ink);text-decoration:none;font-size:1.15rem}
+  .brand span{color:var(--accent)}
+  .links{display:flex;gap:26px}
+  .links a{text-decoration:none;font-size:.92rem;color:var(--muted);font-weight:500}
+  .links a:hover{color:var(--ink)}
+
+  /* hero */
+  .hero{padding:80px 0 72px}
+  .hero .wrap{display:grid;grid-template-columns:1.35fr 1fr;gap:56px;align-items:center}
+  .hero h1{font-size:clamp(2.4rem,5vw,3.6rem);margin-bottom:10px}
+  .hero .headline{font-weight:500;color:var(--ink);margin-bottom:16px}
+  .hero p.lead{font-size:1.1rem;color:var(--muted);max-width:34em;margin-bottom:28px}
+  .cta{display:flex;gap:12px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:999px;font-weight:600;font-size:.95rem;text-decoration:none;border:1px solid var(--ink)}
+  .btn.primary{background:var(--ink);color:#fff}
+  .btn.primary:hover{background:#23345c}
+  .btn.ghost{color:var(--ink)}
+  .btn.ghost:hover{background:var(--surface)}
+  .mini-socials{display:flex;gap:10px;margin-top:26px}
+  .mini-socials a{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:var(--surface);color:var(--ink);transition:all .2s}
+  .mini-socials a:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .mini-socials svg{width:18px;height:18px}
+  .portrait{position:relative;justify-self:center}
+  .portrait img{width:min(360px,72vw);aspect-ratio:4/5;border-radius:24px;object-fit:cover;object-position:center 20%;display:block;box-shadow:0 24px 60px rgba(20,33,61,.18);border:6px solid var(--surface)}
+  .badge{position:absolute;bottom:22px;left:-22px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 16px;box-shadow:0 8px 24px rgba(20,33,61,.1);font-size:.85rem}
+  .badge b{display:block;font-family:Fraunces,serif;font-size:1.35rem;color:var(--ink)}
+
+  /* stats */
+  .stats{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--surface)}
+  .stats .wrap{display:grid;grid-template-columns:repeat(4,1fr)}
+  .stat{padding:28px 20px;border-left:1px solid var(--line)}
+  .stat:first-child{border-left:0}
+  .stat b{font-family:Fraunces,serif;font-size:1.9rem;color:var(--ink);display:block}
+  .stat span{font-size:.88rem;color:var(--muted)}
+
+  section{padding:88px 0}
+  .alt{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .sec-head{margin-bottom:40px}
+  .sec-head h2{font-size:clamp(1.8rem,3.5vw,2.4rem)}
+  .sec-head p{color:var(--muted);margin-top:8px;max-width:40em}
+
+  /* about */
+  .about-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:56px;align-items:start}
+  .about-photo{border-radius:20px;width:100%;aspect-ratio:4/5;object-fit:cover;object-position:right center;box-shadow:0 16px 40px rgba(20,33,61,.12)}
+  .about-grid p{margin-bottom:16px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px}
+  .card h3{font-size:1.05rem;margin-bottom:12px}
+  .cards2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px}
+  .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:.8rem;padding:5px 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-weight:500}
+  .tag.n{background:#e9ecf3;color:var(--ink)}
+
+  /* expertise */
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .svc{background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:28px;transition:transform .2s,box-shadow .2s}
+  .svc:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(20,33,61,.08)}
+  .svc .ic{width:44px;height:44px;border-radius:12px;background:var(--ink);color:#fff;display:grid;place-items:center;margin-bottom:18px}
+  .svc h3{font-size:1.1rem;margin-bottom:8px}
+  .svc p{font-size:.94rem;color:var(--muted)}
+
+  /* timeline */
+  .tl{position:relative;padding-left:32px;border-left:2px solid var(--line)}
+  .tl-item{position:relative;padding-bottom:40px}
+  .tl-item:last-child{padding-bottom:0}
+  .tl-item::before{content:"";position:absolute;left:-41px;top:6px;width:16px;height:16px;border-radius:50%;background:var(--bg);border:3px solid var(--ink)}
+  .tl-item.now::before{border-color:var(--accent);background:var(--accent)}
+  .tl-date{font-size:.8rem;color:var(--accent);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+  .tl-item h3{font-size:1.25rem;margin:4px 0 2px}
+  .tl-org{color:var(--muted);font-size:.94rem;margin-bottom:10px}
+  .tl-item ul{padding-left:18px;font-size:.95rem}
+  .tl-item li{margin-bottom:4px}
+
+  /* gallery */
+  .gallery{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:220px;gap:14px}
+  .gallery figure{position:relative;overflow:hidden;border-radius:16px;background:#ddd}
+  .gallery figure:first-child{grid-column:span 2;grid-row:span 2}
+  .gallery img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+  .gallery figure:hover img{transform:scale(1.04)}
+  .gallery figcaption{position:absolute;inset:auto 0 0 0;padding:28px 14px 12px;font-size:.85rem;color:#fff;font-weight:500;background:linear-gradient(transparent,rgba(10,16,32,.8))}
+
+  /* credentials */
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+  .two .card{background:var(--bg)}
+  .list-item{display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .list-item:last-child{border-bottom:0}
+  .list-item b{color:var(--ink);font-weight:600;display:block}
+  .list-item small{color:var(--muted);font-size:.88rem}
+  .list-item .yr{font-size:.85rem;color:var(--muted);white-space:nowrap}
+
+  /* channels + posts */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .channel{display:flex;gap:18px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px;text-decoration:none;transition:transform .2s,box-shadow .2s}
+  .channel:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(20,33,61,.08)}
+  .channel .wa{flex:none;width:48px;height:48px;border-radius:14px;background:var(--wa);color:#fff;display:grid;place-items:center}
+  .channel .wa svg{width:26px;height:26px}
+  .channel h3{font-size:1.1rem;margin-bottom:6px}
+  .channel p{font-size:.92rem;color:var(--muted);margin-bottom:10px}
+  .channel span{font-size:.88rem;font-weight:600;color:#128c4a}
+  .post{background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:28px;display:flex;flex-direction:column}
+  .post .tl-date{margin-bottom:8px}
+  .post h3{font-size:1.15rem;margin-bottom:10px}
+  .post p{font-size:.94rem;color:var(--muted);flex:1}
+  .post a{margin-top:16px;font-weight:600;color:var(--accent);text-decoration:none;font-size:.92rem}
+
+  /* contact */
+  .contact{background:var(--navy);color:#d7dcea}
+  .contact h2{color:#fff}
+  .contact .sec-head p{color:#aab3c8}
+  .socials{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+  .social{display:flex;align-items:center;gap:14px;padding:18px 20px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);text-decoration:none;color:#fff;transition:background .2s}
+  .social:hover{background:rgba(255,255,255,.13)}
+  .social svg{width:22px;height:22px;flex:none}
+  .social small{display:block;color:#aab3c8;font-size:.82rem}
+  footer{background:#0e1830;color:#8a93a8;font-size:.85rem;padding:24px 0}
+  footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+  @media (max-width:860px){
+    .links{display:none}
+    .hero{padding:40px 0 56px}
+    .hero .wrap,.about-grid,.two,.grid2,.cards2{grid-template-columns:1fr}
+    .portrait{order:-1}
+    .badge{left:-8px}
+    .about-photo{aspect-ratio:1;max-height:420px}
+    .grid3{grid-template-columns:1fr}
+    .stats .wrap{grid-template-columns:1fr 1fr}
+    .stat:nth-child(3){border-left:0}
+    .stat:nth-child(n+3){border-top:1px solid var(--line)}
+    .gallery{grid-template-columns:1fr 1fr;grid-auto-rows:160px}
+    section{padding:64px 0}
+    .wrap{padding:0 16px}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#top">CA Umang Mehta<span>.</span></a>
+    <div class="links">
+      <a href="#about">About</a>
+      <a href="#expertise">Expertise</a>
+      <a href="#experience">Experience</a>
+      <a href="#moments">Moments</a>
+      <a href="#credentials">Credentials</a>
+      <a href="#community">Community</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow" data-f="location"></div>
+      <h1>CA <span data-f="name"></span></h1>
+      <p class="headline" data-f="headline"></p>
+      <p class="lead" data-f="intro"></p>
+      <div class="cta">
+        <a class="btn primary" href="#contact">Get in touch</a>
+        <a class="btn ghost" href="#community">Join my WhatsApp channels</a>
+      </div>
+      <div class="mini-socials" id="miniSocials"></div>
+    </div>
+    <div class="portrait">
+      <img id="photo" alt="Portrait of CA Umang Mehta">
+      <div class="badge"><b>Partner</b>BRS &amp; Associates</div>
+    </div>
+  </div>
+</header>
+
+<div class="stats"><div class="wrap" id="stats"></div></div>
+
+<section id="about">
+  <div class="wrap about-grid">
+    <img class="about-photo" id="aboutPhoto" alt="Umang Mehta">
+    <div>
+      <div class="eyebrow">About</div>
+      <h2 style="font-size:clamp(1.8rem,3.5vw,2.4rem);margin-bottom:20px">From article assistant to partner</h2>
+      <div id="about-text"></div>
+      <div class="cards2">
+        <div class="card"><h3>Top skills</h3><div class="tags" id="skills"></div></div>
+        <div class="card"><h3>Outside work</h3><div class="tags" id="interests"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="expertise" class="alt">
+  <div class="wrap">
+    <div class="sec-head"><div class="eyebrow">Expertise</div><h2>Areas of practice</h2></div>
+    <div class="grid3">
+      <div class="svc">
+        <div class="ic"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+        <h3>Statutory &amp; Tax Audit</h3>
+        <p>Planning, executing and reviewing statutory and tax audit engagements across multiple industries.</p>
+      </div>
+      <div class="svc">
+        <div class="ic"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
+        <h3>Internal Audit &amp; Controls</h3>
+        <p>Evaluating internal control systems and operational processes, and strengthening internal financial controls.</p>
+      </div>
+      <div class="svc">
+        <div class="ic"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <h3>Governance, Risk &amp; Compliance</h3>
+        <p>Risk assessment, governance frameworks and compliance, including data-privacy readiness under the DPDP Act.</p>
+      </div>
+      <div class="svc">
+        <div class="ic"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></div>
+        <h3>Financial Reporting</h3>
+        <p>Financial statements, accounting management and improving the quality of financial reporting.</p>
+      </div>
+      <div class="svc">
+        <div class="ic"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></div>
+        <h3>Business Advisory</h3>
+        <p>Working capital, strategic financial management and performance insights that support better decisions.</p>
+      </div>
+      <div class="svc">
+        <div class="ic"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16v12H4z"/><path d="M8 20h8M12 16v4"/></svg></div>
+        <h3>AI &amp; Automation in Practice</h3>
+        <p>Applying AI tools, Excel and automation to tax research, audit and everyday professional workflows.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="wrap">
+    <div class="sec-head"><div class="eyebrow">Experience</div><h2>Career journey</h2></div>
+    <div class="tl" id="timeline"></div>
+  </div>
+</section>
+
+<section id="moments" class="alt">
+  <div class="wrap">
+    <div class="sec-head"><div class="eyebrow">Moments</div><h2>Speaking, teaching &amp; milestones</h2></div>
+    <div class="gallery" id="gallery"></div>
+  </div>
+</section>
+
+<section id="credentials">
+  <div class="wrap">
+    <div class="sec-head"><div class="eyebrow">Credentials</div><h2>Education &amp; certifications</h2></div>
+    <div class="two">
+      <div class="card"><h3>Education</h3><div id="education"></div></div>
+      <div class="card"><h3>Certifications</h3><div id="certs"></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="community" class="alt">
+  <div class="wrap">
+    <div class="sec-head"><div class="eyebrow">Community</div><h2>WhatsApp channels</h2><p>Follow along for practical updates on Excel, taxation, audit, finance and AI, delivered straight to WhatsApp.</p></div>
+    <div class="grid2" id="channels"></div>
+
+    <div class="sec-head" style="margin:72px 0 32px"><div class="eyebrow">Insights</div><h2>Recent writing</h2></div>
+    <div class="grid2" id="posts"></div>
+  </div>
+</section>
+
+<section id="contact" class="contact">
+  <div class="wrap">
+    <div class="sec-head"><div class="eyebrow" style="color:#f3a6a0">Contact</div><h2>Let's connect</h2><p>Reach out for professional enquiries, collaborations, or to talk finance, governance and technology.</p></div>
+    <div class="socials" id="socials"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© <span id="yr"></span> CA Umang Mehta</span>
+    <span>caumangmehta.co.in</span>
+  </div>
+</footer>
+
+<script src="content.js"></script>
+<script>
+(function () {
+  const P = window.PROFILE;
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  const ICONS = {
+    email: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></svg>',
+    linkedin: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>',
+    instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>',
+    x: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.66l-5.21-6.82-5.97 6.82H1.67l7.73-8.84L1.25 2.25h6.83l4.71 6.23 5.45-6.23zm-1.16 17.52h1.83L7.08 4.13H5.12l11.96 15.64z"/></svg>',
+    github: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57v-2.02c-3.34.73-4.04-1.6-4.04-1.6-.55-1.4-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.07 1.83 2.8 1.3 3.49 1 .1-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22v3.29c0 .32.21.7.82.58A12 12 0 0 0 12 .3"/></svg>',
+    whatsapp: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.4-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.62-.92-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.07c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.7.63.71.22 1.36.19 1.87.12.57-.09 1.76-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35zM12.05 21.8h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88 2.64 0 5.12 1.03 6.99 2.9a9.82 9.82 0 0 1 2.89 6.99c0 5.45-4.44 9.88-9.88 9.88zm8.41-18.3A11.81 11.81 0 0 0 12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.88 11.88 0 0 0 5.68 1.45h.01c6.55 0 11.89-5.34 11.89-11.89 0-3.18-1.24-6.16-3.48-8.41z"/></svg>'
+  };
+
+  document.querySelectorAll("[data-f]").forEach((el) => (el.textContent = P[el.dataset.f]));
+  $("photo").src = P.photo;
+  $("aboutPhoto").src = P.aboutPhoto;
+  $("yr").textContent = new Date().getFullYear();
+
+  $("stats").innerHTML = P.stats.map((s) => `<div class="stat"><b>${esc(s.value)}</b><span>${esc(s.label)}</span></div>`).join("");
+  $("about-text").innerHTML = P.about.map((p) => `<p>${esc(p)}</p>`).join("");
+  $("skills").innerHTML = P.topSkills.map((s) => `<span class="tag">${esc(s)}</span>`).join("");
+  $("interests").innerHTML = P.interests.map((s) => `<span class="tag n">${esc(s)}</span>`).join("");
+
+  $("timeline").innerHTML = P.experience.map((e) => `
+    <div class="tl-item${e.current ? " now" : ""}">
+      <div class="tl-date">${esc(e.dates)}</div>
+      <h3>${esc(e.title)}</h3>
+      <div class="tl-org">${esc(e.org)} · ${esc(e.place)}</div>
+      ${e.points.length ? `<ul>${e.points.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>` : ""}
+    </div>`).join("");
+
+  $("gallery").innerHTML = P.gallery.map((g) => `
+    <figure><img src="${esc(g.src)}" alt="${esc(g.caption)}" loading="lazy"><figcaption>${esc(g.caption)}</figcaption></figure>`).join("");
+
+  const rows = (list) => list.map((i) => `
+    <div class="list-item"><div><b>${esc(i.title)}</b><small>${esc(i.org)}</small></div><span class="yr">${esc(i.dates)}</span></div>`).join("");
+  $("education").innerHTML = rows(P.education);
+  $("certs").innerHTML = rows(P.certifications);
+
+  $("channels").innerHTML = P.channels.map((c) => `
+    <a class="channel" href="${esc(c.url)}" target="_blank" rel="noopener">
+      <div class="wa">${ICONS.whatsapp}</div>
+      <div><h3>${esc(c.name)}</h3><p>${esc(c.tagline)}</p><span>Follow on WhatsApp →</span></div>
+    </a>`).join("");
+
+  $("posts").innerHTML = P.posts.map((p) => `
+    <div class="post">
+      <div class="tl-date">${esc(p.tag)}</div>
+      <h3>${esc(p.title)}</h3>
+      <p>${esc(p.summary)}</p>
+      <a href="${esc(p.url)}" target="_blank" rel="noopener">Read on LinkedIn →</a>
+    </div>`).join("");
+
+  $("miniSocials").innerHTML = P.socials.map((s) =>
+    `<a href="${esc(s.url)}" target="_blank" rel="noopener" aria-label="${esc(s.label)}">${ICONS[s.icon] || ""}</a>`).join("");
+
+  const allLinks = P.socials.concat(P.channels.map((c) => ({ icon: "whatsapp", label: "WhatsApp channel", handle: c.name, url: c.url })));
+  $("socials").innerHTML = allLinks.map((s) => `
+    <a class="social" href="${esc(s.url)}" target="_blank" rel="noopener">
+      ${ICONS[s.icon] || ""}<div>${esc(s.label)}<small>${esc(s.handle)}</small></div>
+    </a>`).join("");
+})();
+</script>
+</body>
+</html>
