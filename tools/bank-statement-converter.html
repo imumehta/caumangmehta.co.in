@@ -1,0 +1,1649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bank Statement Converter | Offline PDF to Excel/CSV</title>
+<style>
+  /* ============================================================
+     DESIGN TOKENS
+     A "ledger book" aesthetic: serif headings, tabular monospace
+     figures, double-rule headers, and red/green bookkeeping ink
+     for debit/credit — quiet everywhere except the ledger tiles.
+     ============================================================ */
+  :root{
+    --bg:#F6F4EE;
+    --surface:#FFFFFF;
+    --surface-alt:#EFEBE2;
+    --border:#D9D3C5;
+    --border-strong:#B9B0A0;
+    --text:#22282C;
+    --text-muted:#6E6A62;
+    --accent:#0E5C4A;
+    --accent-soft:#DDEFE9;
+    --accent-strong:#0A4338;
+    --debit:#A2362B;
+    --debit-soft:#F6E4E1;
+    --credit:#1C6B40;
+    --credit-soft:#E2F0E6;
+    --warn:#9C6B0B;
+    --warn-soft:#F8EEDC;
+    --focus:#3C7CD9;
+    --shadow: 0 1px 2px rgba(30,25,15,0.06), 0 4px 16px rgba(30,25,15,0.05);
+    --radius:8px;
+    --font-display: Georgia, 'Source Serif Pro', 'Times New Roman', serif;
+    --font-body: -apple-system, 'Segoe UI', Inter, Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  }
+  [data-theme="dark"]{
+    --bg:#11161A;
+    --surface:#1A2127;
+    --surface-alt:#212A31;
+    --border:#323C44;
+    --border-strong:#46525B;
+    --text:#E9EDEF;
+    --text-muted:#9AA8AE;
+    --accent:#49C9A6;
+    --accent-soft:rgba(73,201,166,0.12);
+    --accent-strong:#7BE0C4;
+    --debit:#FF8A7A;
+    --debit-soft:rgba(255,138,122,0.12);
+    --credit:#6FDB9B;
+    --credit-soft:rgba(111,219,155,0.12);
+    --warn:#E8B45B;
+    --warn-soft:rgba(232,180,91,0.12);
+    --focus:#6FA8FF;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 6px 20px rgba(0,0,0,0.35);
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-body);
+    font-size:14px;
+    line-height:1.5;
+    transition:background .2s ease, color .2s ease;
+    -webkit-font-smoothing:antialiased;
+  }
+  .num{ font-family:var(--font-mono); font-variant-numeric:tabular-nums; }
+
+  a{ color:var(--accent); }
+
+  /* ---------------- Header ---------------- */
+  header.app-header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 28px;
+    border-bottom:3px double var(--border-strong);
+    background:var(--surface);
+  }
+  .brand{ display:flex; align-items:baseline; gap:14px; }
+  .brand .mark{
+    font-family:var(--font-display);
+    font-size:26px; font-weight:700; letter-spacing:.5px;
+    color:var(--accent-strong);
+  }
+  .brand .tag{
+    font-size:12px; color:var(--text-muted);
+    text-transform:uppercase; letter-spacing:1.5px;
+  }
+  .brand .byline{
+    font-size:11px; color:var(--text-muted); margin-top:2px;
+  }
+  .header-actions{ display:flex; align-items:center; gap:10px; }
+
+  /* ---------------- Buttons ---------------- */
+  button{ font-family:inherit; cursor:pointer; }
+  .btn{
+    display:inline-flex; align-items:center; gap:6px;
+    padding:8px 14px; font-size:13px; font-weight:600;
+    border:1px solid var(--border-strong); border-radius:var(--radius);
+    background:var(--surface); color:var(--text);
+    transition:all .15s ease;
+  }
+  .btn:hover{ border-color:var(--accent); color:var(--accent-strong); }
+  .btn:focus-visible{ outline:2px solid var(--focus); outline-offset:1px; }
+  .btn-primary{ background:var(--accent); color:#fff; border-color:var(--accent); }
+  .btn-primary:hover{ background:var(--accent-strong); border-color:var(--accent-strong); color:#fff; }
+  .btn-ghost{ background:transparent; border-color:transparent; }
+  .btn-ghost:hover{ background:var(--surface-alt); border-color:transparent; color:var(--text); }
+  .btn-sm{ padding:4px 9px; font-size:12px; border-radius:6px; }
+  .btn-icon{ padding:8px; width:36px; height:36px; justify-content:center; }
+  .btn:disabled{ opacity:.45; cursor:not-allowed; }
+
+  /* ---------------- Layout ---------------- */
+  main{ max-width:1320px; margin:0 auto; padding:24px 28px 80px; }
+  .panel{
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:20px; margin-bottom:22px;
+  }
+  .panel h2{
+    font-family:var(--font-display); font-size:17px; margin:0 0 4px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .panel .sub{ color:var(--text-muted); font-size:12.5px; margin:0 0 16px; }
+  .section-eyebrow{
+    font-size:11px; letter-spacing:1.5px; text-transform:uppercase;
+    color:var(--accent); font-weight:700; margin-bottom:6px;
+  }
+
+  /* ---------------- Upload ---------------- */
+  .dropzone{
+    border:2px dashed var(--border-strong); border-radius:var(--radius);
+    padding:34px 20px; text-align:center; background:var(--surface-alt);
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .dropzone.dragover{ border-color:var(--accent); background:var(--accent-soft); }
+  .dropzone .dz-icon{ font-size:30px; margin-bottom:8px; }
+  .dropzone .dz-title{ font-weight:700; margin-bottom:4px; }
+  .dropzone .dz-sub{ color:var(--text-muted); font-size:12.5px; }
+  .dropzone input[type=file]{ display:none; }
+
+  .file-list{ margin-top:16px; display:flex; flex-direction:column; gap:8px; }
+  .file-row{
+    display:flex; align-items:center; gap:12px;
+    border:1px solid var(--border); border-radius:6px;
+    padding:9px 12px; background:var(--surface);
+  }
+  .file-row .file-icon{ font-size:18px; }
+  .file-row .file-meta{ flex:1; min-width:0; }
+  .file-row .file-name{ font-weight:600; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .file-row .file-sub{ font-size:11.5px; color:var(--text-muted); }
+  .file-row .file-progress{
+    height:5px; border-radius:3px; background:var(--surface-alt);
+    overflow:hidden; margin-top:5px;
+  }
+  .file-row .file-progress > div{
+    height:100%; background:var(--accent); width:0%;
+    transition:width .2s ease;
+  }
+  .badge{
+    font-size:10.5px; font-weight:700; letter-spacing:.5px; text-transform:uppercase;
+    padding:3px 8px; border-radius:99px; white-space:nowrap;
+  }
+  .badge-pending{ background:var(--surface-alt); color:var(--text-muted); }
+  .badge-working{ background:var(--accent-soft); color:var(--accent-strong); }
+  .badge-ocr{ background:var(--warn-soft); color:var(--warn); }
+  .badge-done{ background:var(--credit-soft); color:var(--credit); }
+  .badge-error{ background:var(--debit-soft); color:var(--debit); }
+
+  /* ---------------- Overall progress ---------------- */
+  .overall-progress{ margin-top:14px; }
+  .overall-progress .bar{
+    height:8px; border-radius:4px; background:var(--surface-alt); overflow:hidden;
+  }
+  .overall-progress .bar > div{
+    height:100%; width:0%; background:linear-gradient(90deg,var(--accent),var(--accent-strong));
+    transition:width .25s ease;
+  }
+  .overall-progress .label{ font-size:12px; color:var(--text-muted); margin-top:6px; }
+
+  /* ---------------- Dashboard ---------------- */
+  .kpi-grid{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:14px;
+  }
+  .kpi-tile{
+    background:var(--surface); border:1px solid var(--border);
+    border-bottom:3px double var(--border-strong);
+    border-radius:6px; padding:14px 16px;
+    position:relative; overflow:hidden;
+  }
+  .kpi-tile .kpi-label{
+    font-size:11px; text-transform:uppercase; letter-spacing:1.2px;
+    color:var(--text-muted); margin-bottom:6px;
+  }
+  .kpi-tile .kpi-value{
+    font-family:var(--font-mono); font-size:20px; font-weight:700;
+    font-variant-numeric:tabular-nums;
+  }
+  .kpi-tile.kpi-debit .kpi-value{ color:var(--debit); }
+  .kpi-tile.kpi-credit .kpi-value{ color:var(--credit); }
+  .kpi-tile.kpi-warn .kpi-value{ color:var(--warn); }
+
+  /* ---------------- Toolbar ---------------- */
+  .toolbar{
+    display:flex; flex-wrap:wrap; align-items:center; gap:10px;
+    margin-bottom:14px;
+  }
+  .toolbar .grow{ flex:1; min-width:200px; }
+  .field{
+    display:flex; flex-direction:column; gap:3px;
+  }
+  .field label{ font-size:10.5px; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); }
+  input, select{
+    font-family:inherit; font-size:13px; color:var(--text);
+    background:var(--surface); border:1px solid var(--border-strong);
+    border-radius:6px; padding:7px 10px;
+  }
+  input:focus, select:focus, [contenteditable]:focus{
+    outline:2px solid var(--focus); outline-offset:0;
+    border-color:var(--focus);
+  }
+  input[type=search]{ width:100%; }
+  .toolbar input, .toolbar select{ height:34px; }
+
+  /* ---------------- Workspace / table ---------------- */
+  .workspace{ display:flex; gap:18px; align-items:flex-start; }
+  .table-wrap{
+    flex:1; min-width:0; overflow:auto; max-height:62vh;
+    border:1px solid var(--border); border-radius:6px;
+  }
+  table.ledger{ width:100%; border-collapse:collapse; font-size:12.5px; min-width:880px; }
+  table.ledger thead th{
+    position:sticky; top:0; z-index:2;
+    background:var(--surface-alt);
+    text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:1px;
+    color:var(--text-muted); padding:10px 10px;
+    border-bottom:3px double var(--border-strong);
+    cursor:pointer; user-select:none; white-space:nowrap;
+  }
+  table.ledger thead th.sort-active{ color:var(--accent-strong); }
+  table.ledger thead th .arrow{ font-size:10px; opacity:.6; margin-left:3px; }
+  table.ledger tbody td{
+    padding:7px 10px; border-bottom:1px solid var(--border);
+    vertical-align:top;
+  }
+  table.ledger tbody tr:hover{ background:var(--surface-alt); }
+  table.ledger tbody tr.dup-row{ background:var(--warn-soft); }
+  table.ledger tbody tr.dup-row:hover{ background:var(--warn-soft); }
+  table.ledger td.col-date{ white-space:nowrap; font-family:var(--font-mono); }
+  table.ledger td.col-amt{ text-align:right; font-family:var(--font-mono); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  table.ledger td.col-debit{ color:var(--debit); }
+  table.ledger td.col-credit{ color:var(--credit); }
+  table.ledger td.col-bal{ font-weight:600; }
+  table.ledger td.col-narr{ min-width:240px; }
+  table.ledger td.col-actions{ text-align:center; white-space:nowrap; }
+  table.ledger [contenteditable="true"]{
+    border-radius:4px; padding:2px 4px; margin:-2px -4px;
+    min-width:8px; display:inline-block;
+  }
+  table.ledger [contenteditable="true"]:hover{ background:var(--surface-alt); }
+  table.ledger tfoot td{
+    padding:10px; font-weight:700; border-top:3px double var(--border-strong);
+    font-family:var(--font-mono); font-variant-numeric:tabular-nums;
+  }
+  .row-btn{
+    border:none; background:transparent; color:var(--text-muted);
+    font-size:14px; padding:3px 5px; border-radius:4px; cursor:pointer;
+  }
+  .row-btn:hover{ background:var(--debit-soft); color:var(--debit); }
+  .empty-state{
+    padding:60px 20px; text-align:center; color:var(--text-muted);
+  }
+  .empty-state .big{ font-size:34px; margin-bottom:10px; }
+
+  /* ---------------- Side panel ---------------- */
+  .side-panel{
+    width:300px; flex-shrink:0; display:flex; flex-direction:column; gap:14px;
+  }
+  .side-panel .panel-block{
+    border:1px solid var(--border); border-radius:6px; background:var(--surface);
+    padding:12px 14px;
+  }
+  .side-panel h3{
+    font-size:12px; text-transform:uppercase; letter-spacing:1px;
+    margin:0 0 8px; color:var(--text-muted); display:flex; justify-content:space-between; align-items:center;
+  }
+  .dup-item{
+    font-size:12px; padding:7px 0; border-bottom:1px solid var(--border);
+    display:flex; flex-direction:column; gap:3px;
+  }
+  .dup-item:last-child{ border-bottom:none; }
+  .dup-item .dup-meta{ color:var(--text-muted); font-size:11px; }
+  .small-actions{ display:flex; gap:6px; margin-top:6px; flex-wrap:wrap; }
+  .log-list{ font-size:11.5px; max-height:160px; overflow:auto; display:flex; flex-direction:column; gap:4px; }
+  .log-list .log-error{ color:var(--debit); }
+  .log-list .log-ok{ color:var(--credit); }
+  .log-list .log-info{ color:var(--text-muted); }
+
+  @media (max-width: 980px){
+    .workspace{ flex-direction:column; }
+    .side-panel{ width:100%; }
+  }
+
+  /* ---------------- Footer / instructions ---------------- */
+  details.instructions{
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:var(--radius); padding:16px 20px; box-shadow:var(--shadow);
+  }
+  details.instructions summary{
+    cursor:pointer; font-weight:700; font-family:var(--font-display); font-size:15px;
+  }
+  details.instructions pre{
+    background:var(--surface-alt); border:1px solid var(--border);
+    border-radius:6px; padding:12px; overflow:auto; font-size:12px;
+    font-family:var(--font-mono);
+  }
+  details.instructions code{ font-family:var(--font-mono); font-size:12px; background:var(--surface-alt); padding:1px 5px; border-radius:4px; }
+  details.instructions table{ width:100%; border-collapse:collapse; font-size:12.5px; margin:10px 0; }
+  details.instructions table th, details.instructions table td{
+    border:1px solid var(--border); padding:6px 8px; text-align:left;
+  }
+  details.instructions ol{ padding-left:20px; }
+  details.instructions ul{ padding-left:20px; }
+
+  footer.app-footer{
+    text-align:center; color:var(--text-muted); font-size:11.5px;
+    padding:18px 0 30px;
+  }
+
+  .toast-host{
+    position:fixed; bottom:18px; right:18px; display:flex; flex-direction:column; gap:8px; z-index:50;
+  }
+  .toast{
+    background:var(--surface); border:1px solid var(--border); border-left:4px solid var(--accent);
+    box-shadow:var(--shadow); border-radius:6px; padding:10px 14px; font-size:12.5px; min-width:220px;
+    animation:toast-in .15s ease;
+  }
+  .toast.error{ border-left-color:var(--debit); }
+  .toast.warn{ border-left-color:var(--warn); }
+  @keyframes toast-in{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:translateY(0); } }
+
+  .spinner{
+    display:inline-block; width:13px; height:13px; border-radius:50%;
+    border:2px solid var(--border-strong); border-top-color:var(--accent);
+    animation:spin .7s linear infinite; vertical-align:-2px;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .pill-toggle{ display:flex; border:1px solid var(--border-strong); border-radius:99px; overflow:hidden; }
+  .pill-toggle button{
+    border:none; background:transparent; padding:6px 12px; font-size:12px; font-weight:600;
+    color:var(--text-muted);
+  }
+  .pill-toggle button.active{ background:var(--accent); color:#fff; }
+
+  .help-tip{ font-size:11.5px; color:var(--text-muted); }
+</style>
+</head>
+<body data-theme="light">
+
+<header class="app-header">
+  <div class="brand">
+    <span class="mark">Ledger&nbsp;Lens</span>
+    <div>
+      <div class="tag">Offline Bank Statement Converter</div>
+      <div class="byline">CA Workflow Tool · prepared for CA Umang Mehta</div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <span class="help-tip" id="privacyNote">Runs 100% in your browser — no files leave this device</span>
+    <button class="btn btn-icon btn-ghost" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ================= UPLOAD ================= -->
+  <section class="panel" id="uploadPanel">
+    <div class="section-eyebrow">Step 1</div>
+    <h2>Upload bank statement PDFs</h2>
+    <p class="sub">Drop one or more statements from any Indian bank (SBI, HDFC, ICICI, Axis, Kotak, BOB, PNB, IDFC First, IndusInd, Yes Bank, AU Bank and others). Native and scanned PDFs are both supported.</p>
+
+    <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload PDF files">
+      <div class="dz-icon">📄</div>
+      <div class="dz-title">Drag &amp; drop PDF statements here</div>
+      <div class="dz-sub">or <strong>click to browse</strong> · multiple files supported · password-protected PDFs will prompt for a password</div>
+      <input type="file" id="fileInput" accept="application/pdf" multiple />
+    </div>
+
+    <div class="file-list" id="fileList"></div>
+
+    <div class="overall-progress" id="overallProgressWrap" style="display:none;">
+      <div class="bar"><div id="overallProgressBar"></div></div>
+      <div class="label" id="overallProgressLabel">Waiting…</div>
+    </div>
+  </section>
+
+  <!-- ================= DASHBOARD ================= -->
+  <section class="panel" id="dashboardPanel" style="display:none;">
+    <div class="section-eyebrow">Step 2</div>
+    <h2>Summary dashboard</h2>
+    <p class="sub">Audit-style overview of every extracted transaction across all uploaded statements.</p>
+    <div class="kpi-grid" id="kpiGrid"></div>
+  </section>
+
+  <!-- ================= WORKSPACE ================= -->
+  <section class="panel" id="workspacePanel" style="display:none;">
+    <div class="section-eyebrow">Step 3</div>
+    <h2>Review &amp; export transactions</h2>
+    <p class="sub">Click any cell to edit. Standardized columns: Date · Narration · Debit/Withdrawal · Credit/Deposit · Balance.</p>
+
+    <div class="toolbar">
+      <div class="field grow">
+        <label for="searchBox">Search narration</label>
+        <input type="search" id="searchBox" placeholder="e.g. UPI, NEFT, salary, a specific UTR..." />
+      </div>
+      <div class="field">
+        <label for="fromDate">From date</label>
+        <input type="date" id="fromDate" />
+      </div>
+      <div class="field">
+        <label for="toDate">To date</label>
+        <input type="date" id="toDate" />
+      </div>
+      <div class="field">
+        <label for="minAmt">Min amount</label>
+        <input type="number" id="minAmt" placeholder="0" style="width:100px" />
+      </div>
+      <div class="field">
+        <label for="maxAmt">Max amount</label>
+        <input type="number" id="maxAmt" placeholder="any" style="width:100px" />
+      </div>
+      <div class="field">
+        <label for="typeFilter">Type</label>
+        <select id="typeFilter">
+          <option value="all">All</option>
+          <option value="debit">Debit only</option>
+          <option value="credit">Credit only</option>
+          <option value="dup">Duplicates only</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>&nbsp;</label>
+        <button class="btn btn-sm btn-ghost" id="clearFiltersBtn">Clear filters</button>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn btn-sm" id="addRowBtn">➕ Add row</button>
+      <button class="btn btn-sm" id="findDupBtn">🧭 Find duplicates</button>
+      <button class="btn btn-sm" id="removeDupBtn">🗑️ Remove duplicates</button>
+      <span style="flex:1"></span>
+      <button class="btn btn-sm" id="exportCsvBtn">⬇ Export CSV</button>
+      <button class="btn btn-sm btn-primary" id="exportXlsxBtn">⬇ Export Excel (.xlsx)</button>
+    </div>
+
+    <div class="workspace">
+      <div class="table-wrap">
+        <table class="ledger" id="ledgerTable">
+          <thead>
+            <tr>
+              <th data-col="date">Date <span class="arrow"></span></th>
+              <th data-col="narration">Narration <span class="arrow"></span></th>
+              <th data-col="debit">Debit / Withdrawal <span class="arrow"></span></th>
+              <th data-col="credit">Credit / Deposit <span class="arrow"></span></th>
+              <th data-col="balance">Balance <span class="arrow"></span></th>
+              <th data-col="source">Source</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="ledgerBody">
+            <tr><td colspan="7"><div class="empty-state"><div class="big">📥</div>Upload a statement to begin.</div></td></tr>
+          </tbody>
+          <tfoot id="ledgerFoot" style="display:none;">
+            <tr>
+              <td colspan="2">Totals (filtered view)</td>
+              <td class="col-amt col-debit" id="footTotalDebit">0.00</td>
+              <td class="col-amt col-credit" id="footTotalCredit">0.00</td>
+              <td class="col-amt" id="footRowCount">0 rows</td>
+              <td colspan="2"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="side-panel">
+        <div class="panel-block">
+          <h3>Files <span id="fileCountTag"></span></h3>
+          <div class="log-list" id="fileLog"></div>
+        </div>
+        <div class="panel-block">
+          <h3>Duplicate review <span id="dupCountTag"></span></h3>
+          <div id="dupList" class="help-tip">Run "Find duplicates" to scan the table.</div>
+        </div>
+        <div class="panel-block">
+          <h3>Tips</h3>
+          <div class="help-tip">
+            • Edit any cell directly — values are saved instantly.<br/>
+            • Rows highlighted amber are possible duplicates.<br/>
+            • Use filters above before exporting to send only a subset.<br/>
+            • Dates are normalised to DD‑MM‑YYYY.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= OFFLINE INSTRUCTIONS ================= -->
+  <details class="instructions" id="instructionsBlock">
+    <summary>📦 How to make this 100% offline (no CDN dependency)</summary>
+    <div id="instructionsContent"><!-- filled by JS --></div>
+  </details>
+
+</main>
+
+<footer class="app-footer">
+  Ledger Lens — Offline Bank Statement Converter · All processing happens locally in your browser · Built for CA Umang Mehta
+</footer>
+
+<div class="toast-host" id="toastHost"></div>
+
+<!-- ================= LIBRARIES (CDN) =================
+     For fully offline use, download these and update the
+     src/paths — see the "Make this offline" panel below. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
+
+<script>
+/* ================================================================
+   LEDGER LENS — Offline Bank Statement Converter
+   Single-file app: PDF.js extraction, OCR fallback, a generic
+   column-detection parsing engine for Indian bank statements,
+   an editable review table, dedupe, search/filter/sort, and
+   Excel/CSV export.
+   ================================================================ */
+
+(function(){
+"use strict";
+
+/* ----------------------------------------------------------------
+   1. CONFIGURATION — keyword dictionaries & regex patterns used by
+   the column-mapping engine. Extend these lists to support more
+   bank layouts without touching the parsing logic itself.
+   ---------------------------------------------------------------- */
+const CONFIG = {
+  // Header keywords used to locate the transaction table inside the
+  // extracted text and to learn the left-to-right column order.
+  headerKeywords: {
+    date:      ['transaction date','txn date','value date','posting date','date'],
+    narration: ['narration','description','particulars','remarks','details','transaction details','particular'],
+    debit:     ['debit','withdrawal','dr amount','debit amount','withdrawal amt','withdrawal(dr)','debits'],
+    credit:    ['credit','deposit','cr amount','credit amount','deposit amt','deposit(cr)','credits'],
+    amount:    ['amount','amount (inr)','transaction amount'],
+    balance:   ['balance','closing balance','running balance','available balance','balance(inr)','bal']
+  },
+
+  // Lines containing any of these phrases (case-insensitive) are
+  // dropped before parsing — headers, footers, ads, disclaimers.
+  noiseLines: [
+    'statement of account','account statement','statement period',
+    'this is a computer generated','computer generated statement',
+    'page ', 'generated on', 'generated by', 'ifsc', 'micr',
+    'registered office', 'corporate office', 'toll free', 'customer care',
+    'nomination', 'kyc', 'terms and conditions', 'grievance', 'website:',
+    'www.', '***', 'continued on next page', 'end of statement',
+    'this statement is generated', 'branch code', 'cif no', 'account holder',
+    'joint holder', 'currency', 'scheme', 'mod balance', 'unclear balance',
+    'drawing power', 'interest rate', 'od limit'
+  ],
+
+  // Lines whose narration matches these are opening/closing balance
+  // markers — kept out of the transaction table but used to seed
+  // the running balance for debit/credit inference.
+  balanceMarkers: [
+    'opening balance','b/f','brought forward','balance b/f','old balance',
+    'closing balance','c/f','carried forward','balance c/f'
+  ],
+
+  // Keyword hints used ONLY when a row has a single ambiguous amount
+  // and there is no prior balance to compare against (e.g. first row).
+  debitHints: ['upi-','neft-out','imps-out','rtgs-out','atm','withdrawal','wdl','dr.','purchase','pos ','bill pay','emi','charges','fee','tax','debit card','paid to','sent to','transfer to','cash wdl','cheque paid','chq paid'],
+  creditHints: ['neft-in','imps-in','rtgs-in','salary','interest credit','refund','cashback','received from','transfer from','cheque dep','chq dep','cash dep','reversal','dividend','int.pd','int paid'],
+
+  // Date patterns the parser recognises at the START of a row.
+  // Each entry: regex + a function that returns [dd,mm,yyyy] strings.
+  monthMap: {jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,sept:9,oct:10,nov:11,dec:12},
+
+  // Maximum digits a "reference number" style token can have before
+  // we refuse to treat it as a monetary amount (avoids UTR numbers
+  // being mistaken for amounts).
+  maxRefDigits: 9,
+
+  // A line of text (after whitespace normalization) that occurs at least
+  // this many times across the whole document is almost certainly a
+  // repeated page header, footer, or letterhead element (common on
+  // multi-page exports) rather than transaction data, and is dropped
+  // before parsing.
+  repeatedLineThreshold: 3
+};
+
+/* ----------------------------------------------------------------
+   2. GLOBAL STATE
+   ---------------------------------------------------------------- */
+const STATE = {
+  files: [],          // {id, name, status, progress, pages, log entries}
+  transactions: [],   // standardized rows {id, date, narration, debit, credit, balance, source, dup}
+  nextTxnId: 1,
+  sort: { col:'date', dir:'asc' },
+  filters: { search:'', from:'', to:'', minAmt:null, maxAmt:null, type:'all' }
+};
+
+/* ----------------------------------------------------------------
+   3. SMALL DOM / UTILITY HELPERS
+   ---------------------------------------------------------------- */
+const $ = (sel,root) => (root||document).querySelector(sel);
+const $$ = (sel,root) => Array.from((root||document).querySelectorAll(sel));
+
+function escapeHtml(str){
+  return String(str==null?'':str).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+function toast(msg, type){
+  const host = $('#toastHost');
+  const el = document.createElement('div');
+  el.className = 'toast' + (type ? ' '+type : '');
+  el.textContent = msg;
+  host.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .3s'; setTimeout(()=>el.remove(),300); }, 4200);
+}
+
+// Parse a numeric token like "1,23,456.78", "1234.50Cr", "(500.00)",
+// "-500.00" into {value, sign, crdr, ok}. `value` is the absolute
+// magnitude; `sign` reflects parentheses/leading minus; `crdr` is
+// 'cr' | 'dr' | null from a trailing Cr/Dr marker. `ok` is false for
+// tokens that don't look like monetary amounts at all (e.g. UTR
+// reference numbers).
+function parseAmountToken(tok){
+  if (!tok) return {ok:false};
+  let t = tok.trim();
+  let sign = 1;
+  let crdr = null;
+  const crdrMatch = t.match(/(cr|dr)\.?$/i);
+  if (crdrMatch){ crdr = crdrMatch[1].toLowerCase(); t = t.slice(0, -crdrMatch[0].length).trim(); }
+  if (/^\(.*\)$/.test(t)){ sign = -1; t = t.slice(1,-1); }
+  if (/^-/.test(t)){ sign = -1; t = t.slice(1); }
+  t = t.replace(/^(rs\.?|inr|₹)\s*/i,'').replace(/\s*(rs\.?|inr|₹)$/i,'');
+  if (!/^[\d,]+(\.\d{1,2})?$/.test(t) || t === '') return {ok:false};
+  const digitsOnly = t.replace(/[.,]/g,'');
+  if (digitsOnly === '') return {ok:false};
+  // Guard against long unformatted reference numbers being read as amounts
+  if (!t.includes(',') && !t.includes('.') && digitsOnly.length > CONFIG.maxRefDigits) return {ok:false};
+  const value = parseFloat(t.replace(/,/g,''));
+  if (isNaN(value)) return {ok:false};
+  return {ok:true, value, sign, crdr};
+}
+
+// Convenience: signed numeric value of an amount token (sign from
+// parentheses/minus only — Cr/Dr markers are handled by the caller).
+function amountTokenSignedValue(tok){
+  const a = parseAmountToken(tok);
+  if (!a.ok) return NaN;
+  return a.sign * a.value;
+}
+
+// Format a number as 1,23,456.78 (Indian grouping) with 2 decimals.
+function formatINR(num){
+  if (num === null || num === undefined || isNaN(num)) return '';
+  const n = Math.abs(num);
+  const fixed = n.toFixed(2);
+  const [intPart, dec] = fixed.split('.');
+  let last3 = intPart.slice(-3);
+  let other = intPart.slice(0,-3);
+  if (other !== ''){ other = other.replace(/\B(?=(\d{2})+(?!\d))/g, ','); last3 = ','+last3; }
+  const out = other + last3 + '.' + dec;
+  return (num < 0 ? '-' : '') + out;
+}
+
+// Convert a recognised date into "DD-MM-YYYY". Returns null if invalid.
+function normalizeDate(dStr, mStr, yStr){
+  let dd = parseInt(dStr,10);
+  let yyyy = parseInt(yStr,10);
+  if (yStr.length === 2) yyyy += (yyyy >= 70 ? 1900 : 2000);
+  let mm;
+  if (/^[a-zA-Z]+$/.test(mStr)){
+    mm = CONFIG.monthMap[mStr.toLowerCase().slice(0,3)];
+  } else {
+    mm = parseInt(mStr,10);
+  }
+  if (!mm || mm < 1 || mm > 12) return null;
+  if (!dd || dd < 1 || dd > 31) return null;
+  if (yyyy < 1990 || yyyy > 2100) return null;
+  const pad = n => String(n).padStart(2,'0');
+  return `${pad(dd)}-${pad(mm)}-${yyyy}`;
+}
+
+// Returns a sortable key (yyyymmdd as int) from "DD-MM-YYYY", or 0.
+function dateSortKey(ddmmyyyy){
+  if (!ddmmyyyy) return 0;
+  const m = ddmmyyyy.match(/^(\d{2})-(\d{2})-(\d{4})$/);
+  if (!m) return 0;
+  return parseInt(m[3]+m[2]+m[1],10);
+}
+
+function uid(){ return STATE.nextTxnId++; }
+
+/* ----------------------------------------------------------------
+   4. PDF.js SETUP
+   ---------------------------------------------------------------- */
+if (window.pdfjsLib){
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
+/* ----------------------------------------------------------------
+   5. FILE INGESTION — drag/drop, browse, per-file status rows
+   ---------------------------------------------------------------- */
+const dropzone = $('#dropzone');
+const fileInput = $('#fileInput');
+const fileList = $('#fileList');
+
+dropzone.addEventListener('click', () => fileInput.click());
+dropzone.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') fileInput.click(); });
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault(); dropzone.classList.remove('dragover');
+  const files = Array.from(e.dataTransfer.files).filter(f => f.type === 'application/pdf' || /\.pdf$/i.test(f.name));
+  if (files.length) handleFiles(files);
+});
+fileInput.addEventListener('change', () => {
+  if (fileInput.files.length) handleFiles(Array.from(fileInput.files));
+  fileInput.value = '';
+});
+
+function handleFiles(files){
+  files.forEach(file => {
+    const fstate = {
+      id: 'f'+Math.random().toString(36).slice(2),
+      name: file.name, status: 'pending', progress: 0,
+      pages: 0, ocrPages: 0, txnCount: 0, log: []
+    };
+    STATE.files.push(fstate);
+    renderFileRow(fstate);
+    logFile(fstate, `Queued (${(file.size/1024).toFixed(0)} KB)`, 'info');
+    processFile(file, fstate);
+  });
+  $('#overallProgressWrap').style.display = '';
+  $('#dashboardPanel').style.display = '';
+  $('#workspacePanel').style.display = '';
+}
+
+function renderFileRow(fstate){
+  const row = document.createElement('div');
+  row.className = 'file-row';
+  row.id = 'row-'+fstate.id;
+  row.innerHTML = `
+    <div class="file-icon">📄</div>
+    <div class="file-meta">
+      <div class="file-name">${escapeHtml(fstate.name)}</div>
+      <div class="file-sub" id="sub-${fstate.id}">Queued…</div>
+      <div class="file-progress"><div id="bar-${fstate.id}"></div></div>
+    </div>
+    <span class="badge badge-pending" id="badge-${fstate.id}">Pending</span>
+  `;
+  fileList.appendChild(row);
+}
+
+function setFileStatus(fstate, status, subText, pct){
+  fstate.status = status;
+  if (pct !== undefined) fstate.progress = pct;
+  const badge = $('#badge-'+fstate.id);
+  const sub = $('#sub-'+fstate.id);
+  const bar = $('#bar-'+fstate.id);
+  if (sub && subText !== undefined) sub.textContent = subText;
+  if (bar && pct !== undefined) bar.style.width = pct + '%';
+  if (badge){
+    const map = {
+      pending: ['Pending','badge-pending'],
+      working: ['Extracting','badge-working'],
+      ocr: ['OCR','badge-ocr'],
+      done: ['Done','badge-done'],
+      error: ['Error','badge-error']
+    };
+    const [label,cls] = map[status] || map.pending;
+    badge.textContent = label;
+    badge.className = 'badge '+cls;
+  }
+  updateOverallProgress();
+}
+
+function logFile(fstate, msg, level){
+  fstate.log.push({msg,level: level||'info'});
+  renderFileLog();
+}
+
+function renderFileLog(){
+  const host = $('#fileLog');
+  if (!host) return;
+  let html = '';
+  STATE.files.forEach(f => {
+    html += `<div style="font-weight:700;margin-top:4px;">${escapeHtml(f.name)}</div>`;
+    f.log.slice(-4).forEach(l => {
+      html += `<div class="log-${l.level}">• ${escapeHtml(l.msg)}</div>`;
+    });
+  });
+  host.innerHTML = html || '<div class="help-tip">No files yet.</div>';
+  $('#fileCountTag').textContent = STATE.files.length ? `(${STATE.files.length})` : '';
+}
+
+function updateOverallProgress(){
+  const total = STATE.files.length;
+  if (!total) return;
+  const sum = STATE.files.reduce((a,f) => a + (f.progress||0), 0);
+  const pct = Math.round(sum/total);
+  $('#overallProgressBar').style.width = pct + '%';
+  const doneCount = STATE.files.filter(f => f.status==='done').length;
+  const errCount = STATE.files.filter(f => f.status==='error').length;
+  $('#overallProgressLabel').textContent =
+    `${doneCount}/${total} file(s) processed${errCount ? `, ${errCount} error(s)` : ''} — ${STATE.transactions.length} transaction(s) extracted so far`;
+}
+
+/* ----------------------------------------------------------------
+   6. PDF TEXT EXTRACTION (with OCR fallback for scanned pages)
+   Each page's text items are grouped into visual "rows" by their
+   y-coordinate, then ordered left-to-right by x-coordinate. This
+   recreates the table's row text regardless of the bank's PDF
+   layout, without needing a per-bank template.
+   ---------------------------------------------------------------- */
+async function processFile(file, fstate){
+  try{
+    setFileStatus(fstate, 'working', 'Reading file…', 2);
+    const buf = await file.arrayBuffer();
+
+    const loadingTask = pdfjsLib.getDocument({ data: buf });
+    loadingTask.onPassword = (callback, reason) => {
+      const pwd = window.prompt(`"${fstate.name}" is password protected.\nEnter the PDF open password to continue:`);
+      if (pwd === null){
+        logFile(fstate, 'Password not provided — skipped.', 'error');
+        setFileStatus(fstate, 'error', 'Password required — skipped', 100);
+        callback('');
+        return;
+      }
+      callback(pwd);
+    };
+
+    let pdf;
+    try{
+      pdf = await loadingTask.promise;
+    } catch(err){
+      if (err && err.name === 'PasswordException'){
+        logFile(fstate, 'Incorrect password — could not open.', 'error');
+      } else if (err && err.name === 'InvalidPDFException'){
+        logFile(fstate, 'File is not a valid / readable PDF (corrupted?).', 'error');
+      } else {
+        logFile(fstate, 'Failed to open PDF: ' + (err && err.message ? err.message : err), 'error');
+      }
+      setFileStatus(fstate, 'error', 'Could not open PDF', 100);
+      return;
+    }
+
+    fstate.pages = pdf.numPages;
+    if (pdf.numPages === 0){
+      logFile(fstate, 'PDF has no pages.', 'error');
+      setFileStatus(fstate, 'error', 'Empty PDF', 100);
+      return;
+    }
+    logFile(fstate, `Opened — ${pdf.numPages} page(s).`, 'ok');
+
+    let allLines = [];
+    for (let p = 1; p <= pdf.numPages; p++){
+      const page = await pdf.getPage(p);
+      const textContent = await page.getTextContent();
+
+      let lines = groupTextIntoLines(textContent.items);
+
+      // If a page yields almost no text, assume it's a scanned image
+      // and fall back to OCR via Tesseract.js.
+      const totalChars = lines.reduce((a,l) => a + l.text.length, 0);
+      if (totalChars < 20){
+        setFileStatus(fstate, 'ocr', `OCR page ${p}/${pdf.numPages}…`, Math.round((p-0.5)/pdf.numPages*100));
+        try{
+          const ocrText = await ocrPage(page);
+          if (ocrText && ocrText.trim().length > totalChars){
+            lines = ocrText.split('\n').map(t => ({text: t.trim()})).filter(l => l.text);
+            fstate.ocrPages++;
+            logFile(fstate, `Page ${p}: used OCR (no embedded text found).`, 'info');
+          }
+        } catch(ocrErr){
+          logFile(fstate, `Page ${p}: OCR failed (${ocrErr.message || ocrErr}).`, 'error');
+        }
+      }
+
+      if (lines.length === 0){
+        logFile(fstate, `Page ${p}: blank page, skipped.`, 'info');
+      }
+
+      allLines.push(...lines.map(l => l.text));
+      setFileStatus(fstate, fstate.status==='ocr'?'ocr':'working', `Reading page ${p}/${pdf.numPages}…`, Math.round(p/pdf.numPages*70));
+      // yield to keep the UI responsive on large statements
+      await new Promise(r => setTimeout(r, 0));
+    }
+
+    setFileStatus(fstate, 'working', 'Parsing transaction table…', 80);
+    await new Promise(r => setTimeout(r, 0));
+
+    const rows = parseStatementLines(allLines, fstate.name);
+    fstate.txnCount = rows.length;
+    rows.forEach(r => { r.id = uid(); STATE.transactions.push(r); });
+
+    if (rows.length === 0){
+      logFile(fstate, 'No transaction rows recognised in this file. You can still add rows manually.', 'warn');
+      setFileStatus(fstate, 'done', `0 transactions found`, 100);
+    } else {
+      logFile(fstate, `Extracted ${rows.length} transaction(s).`, 'ok');
+      setFileStatus(fstate, 'done', `${rows.length} transaction(s) extracted${fstate.ocrPages?` (${fstate.ocrPages} page(s) via OCR)`:''}`, 100);
+    }
+
+    renderTable();
+    renderDashboard();
+  } catch(err){
+    console.error(err);
+    logFile(fstate, 'Unexpected error: ' + (err && err.message ? err.message : err), 'error');
+    setFileStatus(fstate, 'error', 'Failed — see log', 100);
+  }
+}
+
+// Group raw PDF.js text items into visual rows using their y-position,
+// then order each row left-to-right using x-position.
+function groupTextIntoLines(items){
+  const buckets = [];
+  const TOL = 2.5; // vertical tolerance in PDF units for "same row"
+  items.forEach(it => {
+    if (!it.str || !it.str.trim()) return;
+    const y = it.transform[5];
+    const x = it.transform[4];
+    let bucket = buckets.find(b => Math.abs(b.y - y) <= TOL);
+    if (!bucket){ bucket = {y, items:[]}; buckets.push(bucket); }
+    bucket.items.push({x, str: it.str});
+  });
+  // Pages are top-to-bottom but PDF y grows upward -> sort descending
+  buckets.sort((a,b) => b.y - a.y);
+  return buckets.map(b => {
+    b.items.sort((a,c) => a.x - c.x);
+    // Join with a single space, collapsing runs of whitespace that
+    // pdf.js sometimes splits into separate items.
+    let text = '';
+    let lastX = null, lastStr='';
+    b.items.forEach(it => {
+      const s = it.str;
+      if (text && !/\s$/.test(text) && !/^\s/.test(s)) text += ' ';
+      text += s;
+      lastX = it.x; lastStr = s;
+    });
+    return { text: text.replace(/\s+/g,' ').trim() };
+  }).filter(l => l.text);
+}
+
+// Render a PDF page to a canvas and run Tesseract OCR on it.
+async function ocrPage(page){
+  if (!window.Tesseract) throw new Error('Tesseract.js not available');
+  const viewport = page.getViewport({ scale: 2 });
+  const canvas = document.createElement('canvas');
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+  const ctx = canvas.getContext('2d');
+  await page.render({ canvasContext: ctx, viewport }).promise;
+  const result = await Tesseract.recognize(canvas, 'eng', { logger: () => {} });
+  return result && result.data ? result.data.text : '';
+}
+
+/* ----------------------------------------------------------------
+   7. PARSING ENGINE
+   Generic, layout-agnostic transaction extraction:
+     a) locate a header row to learn column order (debit/credit/
+        amount/balance) and to ignore it,
+     b) drop noise lines (footers, disclaimers, repeated headers),
+     c) for every remaining line starting with a recognisable date,
+        split off trailing numeric tokens as amounts and treat the
+        rest as the narration,
+     d) classify the amount(s) into Debit / Credit / Balance using
+        the detected column order, explicit Cr/Dr markers, running
+        balance deltas, and finally narration keyword hints.
+   ---------------------------------------------------------------- */
+
+// Recognise a date at the very start of a line (no leading prefix).
+// Returns {date:'DD-MM-YYYY', rest:'...'} or null.
+function matchDateAtStart(line){
+  let m = line.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})(?=\s|$)/);
+  if (m){
+    const date = normalizeDate(m[1], m[2], m[3]);
+    if (date) return {date, rest: line.slice(m[0].length).trim()};
+  }
+  m = line.match(/^(\d{1,2})[\s\-]([A-Za-z]{3,9})[\s\-.](\d{2,4})(?=\s|$)/);
+  if (m){
+    const date = normalizeDate(m[1], m[2], m[3]);
+    if (date) return {date, rest: line.slice(m[0].length).trim()};
+  }
+  m = line.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})(?=\s|$)/);
+  if (m){
+    const date = normalizeDate(m[3], m[2], m[1]);
+    if (date) return {date, rest: line.slice(m[0].length).trim()};
+  }
+  return null;
+}
+
+// Recognise a date at the start of a line, optionally preceded by an
+// "S No." style serial-number column (e.g. ICICI's exported transaction
+// history: "12 01.02.2026 SOME PAYEE ..."). A leading integer is only
+// treated as a serial number if stripping it reveals a real date.
+function parseDateAtStart(line){
+  const direct = matchDateAtStart(line);
+  if (direct) return direct;
+  const m = line.match(/^(\d{1,6})\s+(.+)$/);
+  if (m){
+    const inner = matchDateAtStart(m[2]);
+    if (inner) return inner;
+  }
+  return null;
+}
+
+// Scan tokens from the right for monetary amounts (handles a
+// trailing "Cr"/"Dr" that appears as its own token, e.g. "1,234.00 Cr").
+function extractTrailingAmounts(tokens){
+  const amounts = [];
+  let i = tokens.length - 1;
+  while (i >= 0){
+    const tok = tokens[i];
+    if (/^(cr|dr)\.?$/i.test(tok) && i > 0){
+      const combined = tokens[i-1] + tok;
+      const a = parseAmountToken(combined);
+      if (a.ok){ amounts.unshift(a); i -= 2; continue; }
+    }
+    const a = parseAmountToken(tok);
+    if (a.ok){ amounts.unshift(a); i -= 1; continue; }
+    break;
+  }
+  return { amounts, narrationTokens: tokens.slice(0, i+1) };
+}
+
+// Resolve a parsed amount token to a signed value, treating a
+// trailing "Dr" marker on a BALANCE as an overdraft (negative).
+function balanceValue(amt){
+  let v = amt.value * amt.sign;
+  if (amt.crdr === 'dr') v = -Math.abs(v);
+  return v;
+}
+
+// Scan all lines for a header row containing a date keyword plus at
+// least one amount-type keyword (debit/credit/amount/balance), and
+// learn the left-to-right order of those amount columns.
+function detectHeader(lines){
+  for (let i = 0; i < lines.length; i++){
+    const lower = lines[i].toLowerCase();
+    const hasDate = CONFIG.headerKeywords.date.some(k => lower.includes(k));
+    if (!hasDate) continue;
+    const hasNarr = CONFIG.headerKeywords.narration.some(k => lower.includes(k));
+    const matched = [];
+    ['debit','credit','amount','balance'].forEach(cat => {
+      CONFIG.headerKeywords[cat].forEach(k => {
+        const idx = lower.indexOf(k);
+        if (idx >= 0) matched.push({cat, idx});
+      });
+    });
+    if (matched.length >= 1 && (hasNarr || matched.length >= 2)){
+      matched.sort((a,b) => a.idx - b.idx);
+      const seen = new Set(); const order = [];
+      matched.forEach(m => { if (!seen.has(m.cat)){ seen.add(m.cat); order.push(m.cat); } });
+      return { index: i, order };
+    }
+  }
+  return null;
+}
+
+// Main entry point: turn an array of reconstructed text lines from
+// one PDF into an array of standardized transaction rows.
+function parseStatementLines(rawLines, sourceName){
+  let lines = rawLines.map(l => l.replace(/\s+/g,' ').trim()).filter(Boolean);
+
+  // Drop lines that repeat verbatim across the document - these are almost
+  // always repeated page headers/footers/letterhead (table-header
+  // fragments that wrap onto several short lines and recur on every page,
+  // contact-centre boilerplate, etc.) rather than transaction data. A line
+  // that itself begins a transaction (has a date, with or without a
+  // leading S.No.) is never dropped even if it repeats.
+  {
+    const freq = new Map();
+    lines.forEach(l => {
+      const key = l.toLowerCase();
+      freq.set(key, (freq.get(key) || 0) + 1);
+    });
+    const threshold = CONFIG.repeatedLineThreshold || 3;
+    lines = lines.filter(l => {
+      const count = freq.get(l.toLowerCase()) || 0;
+      if (count < threshold) return true;
+      return !!parseDateAtStart(l);
+    });
+  }
+
+  const header = detectHeader(lines);
+  let amountOrder = header ? header.order.filter(c => c !== 'balance') : [];
+  if (amountOrder.length === 0) amountOrder = ['debit','credit'];
+
+  const results = [];
+  let prevBalance = null;
+  let lastRow = null;
+
+  // A transaction's date+narration sometimes appears on one line while its
+  // amount columns wrap onto the following line (or vice-versa). `pending`
+  // accumulates narration/amount tokens for the current transaction across
+  // lines until either >=2 amounts have been seen (date+amounts+balance) or
+  // the next dated line / end of input forces a finalize.
+  let pending = null; // { date, narrTokens: [], amounts: [] }
+
+  function finalizePending(){
+    if (!pending) return;
+    const narration = pending.narrTokens.join(' ').trim();
+    const narrLower = narration.toLowerCase();
+    const amounts = pending.amounts;
+
+    if (CONFIG.balanceMarkers.some(b => narrLower.includes(b))){
+      if (amounts.length) prevBalance = balanceValue(amounts[amounts.length-1]);
+      pending = null;
+      return;
+    }
+
+    if (amounts.length < 2){
+      // Not enough numeric columns to form a row - fold whatever text we
+      // gathered into the previous row's narration so it isn't lost.
+      if (lastRow && narration) lastRow.narration = (lastRow.narration + ' ' + narration).trim();
+      pending = null;
+      return;
+    }
+
+    const balance = balanceValue(amounts[amounts.length-1]);
+    const amtTokens = amounts.slice(0, -1); // 1 or 2 columns before balance
+
+    let debit = 0, credit = 0;
+
+    if (amtTokens.length === 1){
+      const a = amtTokens[0];
+      const val = a.value * a.sign;
+      if (a.crdr === 'dr') debit = val;
+      else if (a.crdr === 'cr') credit = val;
+      else if (prevBalance !== null && !isNaN(balance)){
+        const delta = balance - prevBalance;
+        if (delta > 0.005) credit = val;
+        else if (delta < -0.005) debit = val;
+        else if (CONFIG.debitHints.some(k => narrLower.includes(k))) debit = val;
+        else if (CONFIG.creditHints.some(k => narrLower.includes(k))) credit = val;
+        else debit = val;
+      } else if (CONFIG.debitHints.some(k => narrLower.includes(k))) debit = val;
+      else if (CONFIG.creditHints.some(k => narrLower.includes(k))) credit = val;
+      else debit = val;
+    } else { // two amount columns -> debit & credit
+      const [first, second] = amtTokens;
+      let debitFirst = true;
+      if (amountOrder.includes('debit') && amountOrder.includes('credit')){
+        debitFirst = amountOrder.indexOf('debit') < amountOrder.indexOf('credit');
+      }
+      const fv = first.value * first.sign, sv = second.value * second.sign;
+      if (debitFirst){ debit = fv; credit = sv; } else { credit = fv; debit = sv; }
+      if (prevBalance !== null && !isNaN(balance) && debit > 0 && credit > 0){
+        // Both columns read non-zero but only one should be -
+        // trust the running-balance delta instead.
+        const delta = balance - prevBalance;
+        if (delta >= 0){ credit = Math.abs(delta) || credit; debit = 0; }
+        else { debit = Math.abs(delta) || debit; credit = 0; }
+      }
+    }
+
+    debit = Math.round(Math.abs(debit) * 100) / 100;
+    credit = Math.round(Math.abs(credit) * 100) / 100;
+
+    const row = { date: pending.date, narration, debit, credit, balance, source: sourceName, dup:false };
+    results.push(row);
+    lastRow = row;
+    if (!isNaN(balance)) prevBalance = balance;
+    pending = null;
+  }
+
+  for (let i = 0; i < lines.length; i++){
+    const line = lines[i];
+    if (header && i === header.index) continue;
+    const lower = line.toLowerCase();
+
+    if (CONFIG.noiseLines.some(n => lower.includes(n))) continue;
+    // repeated header rows on subsequent pages
+    if (lower.includes('date') && (lower.includes('narration') || lower.includes('particular') || lower.includes('description'))) continue;
+
+    const dateInfo = parseDateAtStart(line);
+    if (dateInfo){
+      // A new dated line starts the next transaction - finalize whatever
+      // was pending (using only the data it had).
+      finalizePending();
+
+      const tokens = dateInfo.rest.split(/\s+/).filter(Boolean);
+      const { amounts, narrationTokens } = extractTrailingAmounts(tokens);
+      pending = { date: dateInfo.date, narrTokens: [...narrationTokens], amounts: [...amounts] };
+      if (pending.amounts.length >= 2) finalizePending();
+      continue;
+    }
+
+    if (pending){
+      // Continuation line for the current transaction - it may carry the
+      // amount columns (narration on one line, amounts on the next) or
+      // just more narration text.
+      const tokens = line.split(/\s+/).filter(Boolean);
+      const { amounts, narrationTokens } = extractTrailingAmounts(tokens);
+      pending.narrTokens.push(...narrationTokens);
+      pending.amounts.push(...amounts);
+      if (pending.amounts.length >= 2) finalizePending();
+      continue;
+    }
+
+    // No pending transaction and no date on this line - likely a wrapped
+    // continuation of the previous finalized row's narration.
+    if (lastRow && line.length < 120 && !/^[\d,.\s()\-]+$/.test(line)){
+      lastRow.narration = (lastRow.narration + ' ' + line).trim();
+    }
+  }
+
+  finalizePending();
+
+  return results;
+}
+/* ----------------------------------------------------------------
+   8. FILTERING + SORTING
+   ---------------------------------------------------------------- */
+function getFiltered(){
+  const f = STATE.filters;
+  const search = f.search.trim().toLowerCase();
+  return STATE.transactions.filter(t => {
+    if (search && !t.narration.toLowerCase().includes(search)) return false;
+    if (f.from && dateSortKey(t.date) < dateSortKey(toDDMMYYYY(f.from))) return false;
+    if (f.to && dateSortKey(t.date) > dateSortKey(toDDMMYYYY(f.to))) return false;
+    const amt = Math.max(t.debit||0, t.credit||0);
+    if (f.minAmt !== null && !isNaN(f.minAmt) && amt < f.minAmt) return false;
+    if (f.maxAmt !== null && !isNaN(f.maxAmt) && amt > f.maxAmt) return false;
+    if (f.type === 'debit' && !(t.debit > 0)) return false;
+    if (f.type === 'credit' && !(t.credit > 0)) return false;
+    if (f.type === 'dup' && !t.dup) return false;
+    return true;
+  });
+}
+
+// "YYYY-MM-DD" (native <input type=date>) -> "DD-MM-YYYY"
+function toDDMMYYYY(isoDate){
+  const m = isoDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return '';
+  return `${m[3]}-${m[2]}-${m[1]}`;
+}
+
+function getSorted(rows){
+  const { col, dir } = STATE.sort;
+  const mul = dir === 'asc' ? 1 : -1;
+  const copy = rows.slice();
+  copy.sort((a,b) => {
+    let av, bv;
+    if (col === 'date'){ av = dateSortKey(a.date); bv = dateSortKey(b.date); }
+    else if (col === 'debit' || col === 'credit' || col === 'balance'){ av = a[col]||0; bv = b[col]||0; }
+    else { av = (a[col]||'').toString().toLowerCase(); bv = (b[col]||'').toString().toLowerCase(); }
+    if (av < bv) return -1*mul;
+    if (av > bv) return 1*mul;
+    return 0;
+  });
+  return copy;
+}
+
+/* ----------------------------------------------------------------
+   9. TABLE RENDERING
+   ---------------------------------------------------------------- */
+function renderTable(){
+  const body = $('#ledgerBody');
+  const filtered = getSorted(getFiltered());
+
+  if (STATE.transactions.length === 0){
+    body.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="big">📥</div>Upload a statement to begin.</div></td></tr>`;
+    $('#ledgerFoot').style.display = 'none';
+    updateSortIndicators();
+    return;
+  }
+  if (filtered.length === 0){
+    body.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="big">🔍</div>No transactions match the current filters.</div></td></tr>`;
+    $('#ledgerFoot').style.display = 'none';
+    updateSortIndicators();
+    return;
+  }
+
+  let html = '';
+  filtered.forEach(t => {
+    html += `<tr data-id="${t.id}" class="${t.dup ? 'dup-row' : ''}">
+      <td class="col-date" contenteditable="true" data-field="date">${escapeHtml(t.date)}</td>
+      <td class="col-narr" contenteditable="true" data-field="narration">${escapeHtml(t.narration)}</td>
+      <td class="col-amt col-debit" contenteditable="true" data-field="debit">${t.debit ? formatINR(t.debit) : ''}</td>
+      <td class="col-amt col-credit" contenteditable="true" data-field="credit">${t.credit ? formatINR(t.credit) : ''}</td>
+      <td class="col-amt col-bal" contenteditable="true" data-field="balance">${isNaN(t.balance) ? '' : formatINR(t.balance)}</td>
+      <td style="white-space:nowrap; color:var(--text-muted); font-size:11px;">${escapeHtml(t.source||'')}${t.dup ? ' <span class="badge badge-ocr" style="background:var(--warn-soft);color:var(--warn);">DUP</span>' : ''}</td>
+      <td class="col-actions"><button class="row-btn" title="Delete row" data-action="delete">🗑️</button></td>
+    </tr>`;
+  });
+  body.innerHTML = html;
+
+  // Totals for the filtered view
+  let td = 0, tc = 0;
+  filtered.forEach(t => { td += t.debit||0; tc += t.credit||0; });
+  $('#footTotalDebit').textContent = formatINR(td);
+  $('#footTotalCredit').textContent = formatINR(tc);
+  $('#footRowCount').textContent = `${filtered.length} row(s)`;
+  $('#ledgerFoot').style.display = '';
+  updateSortIndicators();
+}
+
+function updateSortIndicators(){
+  $$('#ledgerTable thead th').forEach(th => {
+    const col = th.dataset.col;
+    const arrow = th.querySelector('.arrow');
+    if (!col){ return; }
+    if (col === STATE.sort.col){
+      th.classList.add('sort-active');
+      if (arrow) arrow.textContent = STATE.sort.dir === 'asc' ? '▲' : '▼';
+    } else {
+      th.classList.remove('sort-active');
+      if (arrow) arrow.textContent = '';
+    }
+  });
+}
+
+$$('#ledgerTable thead th').forEach(th => {
+  if (!th.dataset.col) return;
+  th.addEventListener('click', () => {
+    if (STATE.sort.col === th.dataset.col){
+      STATE.sort.dir = STATE.sort.dir === 'asc' ? 'desc' : 'asc';
+    } else {
+      STATE.sort.col = th.dataset.col;
+      STATE.sort.dir = th.dataset.col === 'date' ? 'asc' : 'desc';
+    }
+    renderTable();
+  });
+});
+
+// Inline editing — commit on blur
+$('#ledgerBody').addEventListener('focusout', e => {
+  const td = e.target;
+  if (!td.matches('[contenteditable="true"]')) return;
+  const tr = td.closest('tr');
+  const id = parseInt(tr.dataset.id, 10);
+  const txn = STATE.transactions.find(t => t.id === id);
+  if (!txn) return;
+  const field = td.dataset.field;
+  let raw = td.textContent.trim();
+
+  if (field === 'debit' || field === 'credit' || field === 'balance'){
+    const a = parseAmountToken(raw.replace(/^-/,'').trim());
+    let val = raw === '' ? 0 : (a.ok ? a.value * (raw.trim().startsWith('-') ? -1 : 1) : NaN);
+    if (isNaN(val)){
+      toast('Could not read "'+raw+'" as a number — reverted.', 'warn');
+      renderTable();
+      return;
+    }
+    txn[field] = field === 'balance' ? val : Math.abs(val);
+  } else if (field === 'date'){
+    const d = parseDateAtStart(raw + ' x'); // reuse date parser, trailing token forces boundary
+    if (d){ txn.date = d.date; } else { toast('Date should look like DD-MM-YYYY.', 'warn'); }
+  } else {
+    txn[field] = raw;
+  }
+  renderTable();
+  renderDashboard();
+});
+
+// Row delete
+$('#ledgerBody').addEventListener('click', e => {
+  const btn = e.target.closest('[data-action="delete"]');
+  if (!btn) return;
+  const tr = btn.closest('tr');
+  const id = parseInt(tr.dataset.id, 10);
+  STATE.transactions = STATE.transactions.filter(t => t.id !== id);
+  renderTable();
+  renderDashboard();
+});
+
+/* ----------------------------------------------------------------
+   10. DASHBOARD (KPI tiles)
+   ---------------------------------------------------------------- */
+function renderDashboard(){
+  const txns = STATE.transactions;
+  const grid = $('#kpiGrid');
+  if (txns.length === 0){ grid.innerHTML = ''; return; }
+
+  const totalDebit = txns.reduce((a,t) => a + (t.debit||0), 0);
+  const totalCredit = txns.reduce((a,t) => a + (t.credit||0), 0);
+  const dupCount = txns.filter(t => t.dup).length;
+  const sorted = txns.slice().sort((a,b) => dateSortKey(a.date) - dateSortKey(b.date));
+  const first = sorted[0], last = sorted[sorted.length-1];
+  const closing = (last && !isNaN(last.balance)) ? formatINR(last.balance) : '—';
+  const range = (first && last) ? `${first.date} → ${last.date}` : '—';
+
+  grid.innerHTML = `
+    <div class="kpi-tile"><div class="kpi-label">Transactions</div><div class="kpi-value">${txns.length}</div></div>
+    <div class="kpi-tile kpi-debit"><div class="kpi-label">Total Debit</div><div class="kpi-value">₹ ${formatINR(totalDebit)}</div></div>
+    <div class="kpi-tile kpi-credit"><div class="kpi-label">Total Credit</div><div class="kpi-value">₹ ${formatINR(totalCredit)}</div></div>
+    <div class="kpi-tile"><div class="kpi-label">Closing Balance</div><div class="kpi-value">₹ ${closing}</div></div>
+    <div class="kpi-tile ${dupCount?'kpi-warn':''}"><div class="kpi-label">Possible Duplicates</div><div class="kpi-value">${dupCount}</div></div>
+    <div class="kpi-tile"><div class="kpi-label">Date Range</div><div class="kpi-value" style="font-size:13px;">${range}</div></div>
+  `;
+}
+
+/* ----------------------------------------------------------------
+   11. ADD ROW / DUPLICATE DETECTION
+   ---------------------------------------------------------------- */
+$('#addRowBtn').addEventListener('click', () => {
+  const today = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  const date = `${pad(today.getDate())}-${pad(today.getMonth()+1)}-${today.getFullYear()}`;
+  STATE.transactions.push({ id: uid(), date, narration: 'New transaction', debit:0, credit:0, balance:NaN, source:'Manual', dup:false });
+  renderTable();
+  renderDashboard();
+  toast('Row added — click any cell to edit.');
+});
+
+function dupKey(t){
+  return [t.date, t.narration.trim().toLowerCase().replace(/\s+/g,' '), t.debit.toFixed(2), t.credit.toFixed(2), isNaN(t.balance)?'':t.balance.toFixed(2)].join('|');
+}
+
+$('#findDupBtn').addEventListener('click', () => {
+  const groups = {};
+  STATE.transactions.forEach(t => { t.dup = false; (groups[dupKey(t)] = groups[dupKey(t)] || []).push(t); });
+  let dupGroups = 0, dupRows = 0;
+  Object.values(groups).forEach(g => {
+    if (g.length > 1){
+      dupGroups++;
+      g.forEach((t,idx) => { if (idx>0){ t.dup = true; dupRows++; } });
+    }
+  });
+  renderTable();
+  renderDashboard();
+  const dupList = $('#dupList');
+  $('#dupCountTag').textContent = dupRows ? `(${dupRows})` : '';
+  if (dupRows === 0){
+    dupList.innerHTML = '<div class="help-tip">No duplicates found. ✅</div>';
+  } else {
+    let html = '';
+    Object.values(groups).filter(g=>g.length>1).slice(0,25).forEach(g => {
+      html += `<div class="dup-item"><strong>${escapeHtml(g[0].date)}</strong> — ${escapeHtml(g[0].narration.slice(0,40))}${g[0].narration.length>40?'…':''}
+        <span class="dup-meta">₹${formatINR(Math.max(g[0].debit,g[0].credit))} · ${g.length} copies</span></div>`;
+    });
+    dupList.innerHTML = html;
+    toast(`Found ${dupRows} likely duplicate row(s), highlighted in amber.`, 'warn');
+  }
+});
+
+$('#removeDupBtn').addEventListener('click', () => {
+  const before = STATE.transactions.length;
+  STATE.transactions = STATE.transactions.filter(t => !t.dup);
+  const removed = before - STATE.transactions.length;
+  $('#dupCountTag').textContent = '';
+  $('#dupList').innerHTML = removed
+    ? `<div class="help-tip">Removed ${removed} duplicate row(s).</div>`
+    : '<div class="help-tip">Run "Find duplicates" first.</div>';
+  renderTable();
+  renderDashboard();
+  if (removed) toast(`Removed ${removed} duplicate row(s).`);
+});
+
+/* ----------------------------------------------------------------
+   12. FILTER TOOLBAR WIRING
+   ---------------------------------------------------------------- */
+function bindFilter(id, key, transform){
+  const el = $('#'+id);
+  el.addEventListener('input', () => {
+    STATE.filters[key] = transform ? transform(el.value) : el.value;
+    renderTable();
+  });
+}
+bindFilter('searchBox','search');
+bindFilter('fromDate','from');
+bindFilter('toDate','to');
+bindFilter('minAmt','minAmt', v => v === '' ? null : parseFloat(v));
+bindFilter('maxAmt','maxAmt', v => v === '' ? null : parseFloat(v));
+bindFilter('typeFilter','type');
+
+$('#clearFiltersBtn').addEventListener('click', () => {
+  STATE.filters = { search:'', from:'', to:'', minAmt:null, maxAmt:null, type:'all' };
+  ['searchBox','fromDate','toDate','minAmt','maxAmt'].forEach(id => $('#'+id).value = '');
+  $('#typeFilter').value = 'all';
+  renderTable();
+});
+
+/* ----------------------------------------------------------------
+   13. EXPORTS
+   ---------------------------------------------------------------- */
+const EXPORT_HEADERS = ['Date','Narration','Debit / Withdrawal','Credit / Deposit','Balance'];
+
+function exportRows(){
+  return getSorted(getFiltered()).map(t => [
+    t.date,
+    t.narration,
+    t.debit ? t.debit.toFixed(2) : '',
+    t.credit ? t.credit.toFixed(2) : '',
+    isNaN(t.balance) ? '' : t.balance.toFixed(2)
+  ]);
+}
+
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 200);
+}
+
+function timestamp(){
+  const d = new Date();
+  const p = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}`;
+}
+
+$('#exportCsvBtn').addEventListener('click', () => {
+  if (!STATE.transactions.length){ toast('Nothing to export yet.', 'warn'); return; }
+  const rows = [EXPORT_HEADERS, ...exportRows()];
+  const csv = rows.map(r => r.map(cell => {
+    const s = String(cell ?? '');
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+  }).join(',')).join('\r\n');
+  downloadBlob(new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'}), `bank_statement_${timestamp()}.csv`);
+  toast('CSV exported.');
+});
+
+$('#exportXlsxBtn').addEventListener('click', () => {
+  if (!STATE.transactions.length){ toast('Nothing to export yet.', 'warn'); return; }
+  if (!window.XLSX){ toast('Excel library failed to load — check your network/offline setup.', 'error'); return; }
+  const rows = [EXPORT_HEADERS, ...exportRows()];
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{wch:12},{wch:48},{wch:16},{wch:16},{wch:16}];
+  // Format amount columns as numbers with 2 decimals
+  for (let r = 1; r < rows.length; r++){
+    ['C','D','E'].forEach(col => {
+      const ref = col + (r+1);
+      if (ws[ref] && ws[ref].v !== ''){
+        ws[ref].t = 'n'; ws[ref].v = parseFloat(ws[ref].v) || 0; ws[ref].z = '#,##0.00';
+      }
+    });
+  }
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Transactions');
+  XLSX.writeFile(wb, `bank_statement_${timestamp()}.xlsx`);
+  toast('Excel file exported.');
+});
+
+/* ----------------------------------------------------------------
+   14. THEME TOGGLE
+   ---------------------------------------------------------------- */
+const themeToggle = $('#themeToggle');
+function applyTheme(theme){
+  document.body.setAttribute('data-theme', theme);
+  themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+  themeToggle.title = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+  try{ localStorage.setItem('ledgerlens-theme', theme); }catch(e){}
+}
+themeToggle.addEventListener('click', () => {
+  const next = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+});
+(function initTheme(){
+  let saved = 'light';
+  try{ saved = localStorage.getItem('ledgerlens-theme') || 'light'; }catch(e){}
+  applyTheme(saved);
+})();
+
+/* ----------------------------------------------------------------
+   15. OFFLINE SETUP INSTRUCTIONS
+   ---------------------------------------------------------------- */
+$('#instructionsContent').innerHTML = `
+  <p>This file currently loads three libraries from public CDNs so it works immediately. For a
+  fully air&#8209;gapped / offline deployment (e.g. on a machine with no internet access), download each
+  library once and point the <code>&lt;script src="..."&gt;</code> tags near the bottom of the file
+  to your local copies.</p>
+
+  <table>
+    <tr><th>Library</th><th>Used for</th><th>Download</th><th>Save as</th></tr>
+    <tr>
+      <td>PDF.js (core)</td><td>Reading text from PDF pages</td>
+      <td><code>https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js</code></td>
+      <td><code>./lib/pdf.min.js</code></td>
+    </tr>
+    <tr>
+      <td>PDF.js (worker)</td><td>Background PDF parsing</td>
+      <td><code>https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js</code></td>
+      <td><code>./lib/pdf.worker.min.js</code></td>
+    </tr>
+    <tr>
+      <td>SheetJS (xlsx)</td><td>Excel (.xlsx) export</td>
+      <td><code>https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js</code></td>
+      <td><code>./lib/xlsx.full.min.js</code></td>
+    </tr>
+    <tr>
+      <td>Tesseract.js</td><td>OCR for scanned PDFs</td>
+      <td><code>https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js</code></td>
+      <td><code>./lib/tesseract.min.js</code></td>
+    </tr>
+  </table>
+
+  <p><strong>Steps:</strong></p>
+  <ol>
+    <li>Create a <code>lib/</code> folder next to this HTML file.</li>
+    <li>Visit each "Download" URL above in a browser, save the response as the matching "Save as" filename inside <code>lib/</code>.</li>
+    <li>In this HTML file, find the three <code>&lt;script src="https://..."&gt;</code> tags just before
+      the main <code>&lt;script&gt;</code> block at the bottom, and change each <code>src</code> to the local path
+      (e.g. <code>src="lib/pdf.min.js"</code>).</li>
+    <li>Find the line <code>pdfjsLib.GlobalWorkerOptions.workerSrc = '...'</code> near the top of the script
+      and change it to <code>'lib/pdf.worker.min.js'</code>.</li>
+    <li><strong>Tesseract.js note:</strong> it also needs a WASM core and an English language file (<code>eng.traineddata</code>)
+      the first time OCR runs. Tesseract.js normally fetches these from <code>cdn.jsdelivr.net</code> on demand.
+      For full offline OCR, download <code>tesseract-core.wasm.js</code> + <code>tesseract-core.wasm</code> from the
+      Tesseract.js release assets and <code>eng.traineddata.gz</code> from the <code>tessdata_fast</code> repo,
+      place them in <code>lib/</code>, and pass their paths via
+      <code>Tesseract.recognize(canvas, 'eng', { corePath: 'lib/', langPath: 'lib/' })</code>
+      inside the <code>ocrPage()</code> function.</li>
+    <li>Open the HTML file directly (or via a local static server) — everything now runs without internet access.</li>
+  </ol>
+
+  <p class="help-tip">Tip: if a transaction table from your bank isn't picked up perfectly, you can always fix it
+  in the review table — every cell is editable, rows can be added/removed, and the export reflects your edits.</p>
+
+  <p class="help-tip"><strong>Roadmap hooks:</strong> the standardized <code>STATE.transactions</code> array
+  (Date / Narration / Debit / Credit / Balance / Source) is the foundation for future modules — cash-flow analysis,
+  loan/EMI analysis, CMA data preparation, financial ratios and GST reconciliation can all be built as new
+  functions that read from this same array.</p>
+`;
+
+/* ----------------------------------------------------------------
+   16. INIT
+   ---------------------------------------------------------------- */
+renderTable();
+renderDashboard();
+
+})();
+
+
+
+
+</script>
+</body>
+</html>

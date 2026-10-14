@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GSTR-2A vs Books Reconciliation | BRS &amp; Associates</title>
+<style>
+:root{
+  --ink:#1C2B36; --navy:#17344A; --paper:#F3F6F8; --surface:#FFFFFF;
+  --rule:#D8E0E6; --rule-2:#E8EDF1; --muted:#5B6B77; --accent:#22698F; --accent-d:#1A5677;
+  --match:#1E7A4F; --match-bg:#E4F2EA;
+  --mis:#94590A; --mis-bg:#FCEFD6;
+  --miss:#B0372D; --miss-bg:#FBE5E2;
+  --missb:#6F3E93; --missb-bg:#EFE6F6;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;font-size:14px;line-height:1.5;color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+.num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Header */
+header.top{background:var(--navy);color:#fff}
+.wrap{max-width:1480px;margin:0 auto}
+header.top .wrap{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding:22px 32px 20px;flex-wrap:wrap}
+.brand{font-size:13px;color:#B7CAD8}
+h1{margin:2px 0 0;font-size:24px;font-weight:600;letter-spacing:-.01em}
+.top .note{margin:0;font-size:12.5px;color:#B7CAD8;max-width:360px;text-align:right}
+
+/* Steps */
+main.wrap{padding:20px 32px 72px}
+.step{display:grid;grid-template-columns:44px minmax(0,1fr);gap:18px;padding:26px 0;border-bottom:1px solid var(--rule)}
+.step:last-child{border-bottom:0}
+.step-no{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--navy);color:var(--navy);display:grid;place-items:center;font-weight:600;margin-top:1px;background:var(--surface)}
+.step.done .step-no{background:var(--navy);color:#fff}
+.step.locked{opacity:.42;pointer-events:none;user-select:none}
+.step.locked .step-body > *:not(.step-head){display:none}
+.step-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+h2{margin:0;font-size:17px;font-weight:600}
+.lead{margin:3px 0 0;color:var(--muted);max-width:76ch}
+.head-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+/* Buttons */
+.btn{font-weight:600;font-size:13.5px;border-radius:8px;padding:8px 15px;border:1px solid #C3CFD8;background:var(--surface);cursor:pointer;line-height:1.3}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{background:var(--accent-d);border-color:var(--accent-d);color:#fff}
+.btn.big{padding:11px 22px;font-size:14.5px}
+.link{background:none;border:0;padding:0;color:var(--accent);cursor:pointer;font-size:13px;text-decoration:underline;text-underline-offset:2px}
+
+/* Drop zones */
+.drops{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.drop{display:flex;gap:16px;align-items:center;min-height:108px;padding:18px 20px;background:var(--surface);border:1.5px dashed #A9BBC9;border-radius:10px;cursor:pointer;transition:border-color .15s,background-color .15s}
+.drop:hover,.drop.over{border-color:var(--accent);background:#EEF5FA}
+.drop.loaded{border-style:solid;border-color:var(--rule)}
+.drop svg{flex:none;color:var(--navy)}
+.drop strong{display:block;font-size:15px}
+.drop .drop-sub{color:var(--muted);font-size:13px}
+.drop.loaded .drop-sub{color:var(--match)}
+.drop-foot{display:flex;justify-content:space-between;gap:12px;margin-top:6px;padding:0 2px;font-size:12.5px;color:var(--muted)}
+.meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
+.fld{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted)}
+.fld input,.fld select{padding:7px 10px;border:1px solid #C3CFD8;border-radius:7px;background:var(--surface);color:var(--ink);font-size:13.5px;min-width:0}
+
+/* Mapping */
+.maps{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:10px;overflow:hidden}
+.panel-empty{padding:28px 20px;color:var(--muted)}
+.panel-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;padding:14px 16px;border-bottom:1px solid var(--rule);background:#FAFBFC}
+.panel-head h3{margin:0;font-size:14.5px;font-weight:600}
+.panel-head .sub{font-size:12.5px;color:var(--muted);word-break:break-all}
+.hdrctl{display:flex;gap:10px;align-items:center;font-size:12.5px;color:var(--muted)}
+.hdrctl input{width:58px;padding:4px 6px;border:1px solid #C3CFD8;border-radius:6px}
+.hdrctl select{padding:4px 6px;border:1px solid #C3CFD8;border-radius:6px;background:#fff}
+.maptbl{width:100%;border-collapse:collapse;font-size:13px}
+.maptbl th,.maptbl td{padding:6px 12px;border-bottom:1px solid var(--rule-2);text-align:left;vertical-align:middle}
+.maptbl thead th{font-weight:600;color:var(--muted);font-size:12px;background:#fff}
+.maptbl tbody th{font-weight:500;width:34%}
+.maptbl select{width:100%;padding:5px 8px;border:1px solid #C3CFD8;border-radius:6px;background:#fff;font-size:13px;max-width:260px}
+.maptbl tr.need select{border-color:var(--miss);background:var(--miss-bg)}
+.maptbl .sample{color:var(--muted);font-size:12.5px;width:30%;word-break:break-word}
+.req{color:var(--miss);margin-left:3px}
+.bad{color:var(--miss)}
+.opts{display:flex;flex-wrap:wrap;gap:10px 24px;align-items:flex-end;margin-top:18px;padding:14px 16px;background:var(--surface);border:1px solid var(--rule);border-radius:10px}
+.opts .fld{width:150px}
+.chk{display:flex;gap:7px;align-items:center;font-size:13px;cursor:pointer}
+.chk input{width:15px;height:15px;accent-color:var(--accent)}
+.run-row{display:flex;align-items:center;gap:14px;margin-top:18px;flex-wrap:wrap}
+.msg{font-size:13px;color:var(--miss)}
+
+/* Overview */
+.overview{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:18px 20px 16px}
+.bar{display:flex;height:22px;border-radius:6px;overflow:hidden;background:var(--rule-2)}
+.bar span{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:600;color:#fff;min-width:3px;white-space:nowrap;overflow:hidden}
+.bar .match{background:var(--match)} .bar .mismatch{background:#C8820F} .bar .miss2a{background:var(--miss)} .bar .missbooks{background:var(--missb)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:16px;border-top:1px solid var(--rule-2)}
+.stat{display:grid;grid-template-columns:auto 1fr;column-gap:8px;align-items:baseline;text-align:left;padding:12px 16px 4px;background:none;border:0;border-left:1px solid var(--rule-2);cursor:pointer;border-radius:0}
+.stat:first-child{border-left:0;padding-left:0}
+.stat:hover .lbl{text-decoration:underline}
+.stat.on .lbl{font-weight:700}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;align-self:center}
+.dot.match{background:var(--match)} .dot.mismatch{background:#C8820F} .dot.miss2a{background:var(--miss)} .dot.missbooks{background:var(--missb)}
+.stat .lbl{font-size:13px}
+.stat .cnt{grid-column:1/-1;font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.25}
+.stat .amt{grid-column:1/-1;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.itc{display:flex;flex-wrap:wrap;gap:8px 32px;margin-top:14px;padding-top:12px;border-top:1px solid var(--rule-2);font-size:13px;color:var(--muted)}
+.itc b{color:var(--ink);font-variant-numeric:tabular-nums;font-weight:600;margin-left:6px}
+.itc b.neg{color:var(--miss)}
+
+/* Tabs and toolbar */
+.tabs{display:flex;gap:4px;margin:22px 0 0;border-bottom:1px solid var(--rule)}
+.tab{background:none;border:0;border-bottom:2.5px solid transparent;padding:9px 14px;font-weight:600;color:var(--muted);cursor:pointer;margin-bottom:-1px}
+.tab[aria-selected="true"]{color:var(--navy);border-bottom-color:var(--navy)}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 0}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid #C3CFD8;background:var(--surface);border-radius:999px;padding:4px 12px;font-size:12.5px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+.chip .c{font-variant-numeric:tabular-nums;opacity:.75;margin-left:4px}
+.search{padding:7px 12px;border:1px solid #C3CFD8;border-radius:8px;width:300px;max-width:100%;background:var(--surface)}
+
+/* Results table */
+.tblwrap{overflow:auto;max-height:72vh;background:var(--surface);border:1px solid var(--rule);border-radius:10px}
+table.res{border-collapse:separate;border-spacing:0;width:100%;font-size:12.5px}
+table.res th,table.res td{padding:7px 10px;border-bottom:1px solid var(--rule-2);text-align:left;vertical-align:top}
+table.res thead th{position:sticky;background:#F7F9FA;font-weight:600;font-size:12px;color:#3E4F5B;z-index:2;white-space:nowrap}
+table.res thead tr:first-child th{top:0}
+table.res thead tr:nth-child(2) th{top:33px}
+table.res thead th.grp{text-align:center;border-bottom:2px solid var(--rule)}
+table.res thead th.grp.b{border-bottom-color:var(--navy)}
+table.res thead th.grp.g{border-bottom-color:var(--accent)}
+table.res thead th[data-sort]{cursor:pointer}
+table.res thead th[data-sort]:hover{color:var(--accent)}
+table.res thead th[aria-sort="ascending"]::after{content:" \25B2";font-size:9px}
+table.res thead th[aria-sort="descending"]::after{content:" \25BC";font-size:9px}
+table.res th.num,table.res td.num{text-align:right}
+table.res td.sep,table.res th.sep{border-left:1px solid var(--rule)}
+table.res tbody tr:hover td{background:#F6FAFC}
+table.res td.hi{background:var(--mis-bg)!important;color:#6B3F00;font-weight:600}
+table.res td.neg{color:var(--miss)}
+table.res td.zero{color:#A0ADB6}
+table.res td.mono{font-family:Consolas,"Cascadia Mono","SF Mono",monospace;font-size:12px}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.pill.match{color:var(--match);background:var(--match-bg)}
+.pill.mismatch{color:var(--mis);background:var(--mis-bg)}
+.pill.miss2a{color:var(--miss);background:var(--miss-bg)}
+.pill.missbooks{color:var(--missb);background:var(--missb-bg)}
+.pill-sub{display:block;font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap}
+.rm{min-width:210px;max-width:300px}
+table.res td.inv{white-space:nowrap}
+table.res td.party{min-width:170px}
+.rm .note{display:block;color:var(--muted);font-size:11.5px}
+.party-link{cursor:pointer}
+.party-link:hover td{background:#EEF5FA!important}
+.empty{padding:36px;text-align:center;color:var(--muted)}
+.pager{display:flex;justify-content:space-between;align-items:center;padding:10px 2px;font-size:12.5px;color:var(--muted)}
+.pager .btn{padding:5px 12px;font-size:12.5px}
+.foot-note{margin-top:28px;font-size:12px;color:var(--muted);max-width:110ch}
+
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:10px 18px;border-radius:8px;font-size:13.5px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50;max-width:90vw}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.err{background:var(--miss)}
+
+@media (max-width:960px){
+  .drops,.maps{grid-template-columns:1fr}
+  .meta{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stat:nth-child(3){border-left:0;padding-left:0}
+  main.wrap,header.top .wrap{padding-left:16px;padding-right:16px}
+  .step{grid-template-columns:1fr;gap:10px}
+  .top .note{text-align:left}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{
+  header.top,.step:not(#step3),.toolbar,.tabs,.pager,.head-actions{display:none!important}
+  .tblwrap{max-height:none;overflow:visible;border:0}
+  body{background:#fff}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div>
+      <div class="brand">BRS &amp; Associates, Chartered Accountants</div>
+      <h1>GSTR-2A vs books reconciliation</h1>
+    </div>
+    <p class="note">Runs entirely in this browser. Files are read on this computer and are never uploaded.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- STEP 1 -->
+  <section class="step" id="step1">
+    <div class="step-no" aria-hidden="true">1</div>
+    <div class="step-body">
+      <div class="step-head">
+        <div>
+          <h2>Load your files</h2>
+          <p class="lead">Add the purchase register from your books and the GSTR-2A B2B download, both saved as CSV. Title rows above the column headers are detected automatically.</p>
+        </div>
+        <div class="head-actions"><button class="btn" id="btnSample" type="button">Try with sample data</button></div>
+      </div>
+
+      <div class="drops">
+        <div>
+          <label class="drop" id="drop-books" data-side="books">
+            <input class="sr" type="file" accept=".csv,.txt,text/csv" data-side="books">
+            <svg width="34" height="40" viewBox="0 0 34 40" fill="none" aria-hidden="true"><path d="M3 1.5h19l9 9v28H3z" stroke="currentColor" stroke-width="1.6"/><path d="M22 1.5v9h9" stroke="currentColor" stroke-width="1.6"/><path d="M8 19h18M8 24h18M8 29h12" stroke="currentColor" stroke-width="1.6"/></svg>
+            <div><strong>Books (purchase register)</strong><span class="drop-sub">Drop the CSV here or click to browse</span></div>
+          </label>
+          <div class="drop-foot"><span>Supplier GSTIN, invoice no., date, taxable value and tax</span><button class="link" type="button" data-tpl="books">Download template</button></div>
+        </div>
+        <div>
+          <label class="drop" id="drop-gst" data-side="gst">
+            <input class="sr" type="file" accept=".csv,.txt,text/csv" data-side="gst">
+            <svg width="34" height="40" viewBox="0 0 34 40" fill="none" aria-hidden="true"><path d="M3 1.5h19l9 9v28H3z" stroke="currentColor" stroke-width="1.6"/><path d="M22 1.5v9h9" stroke="currentColor" stroke-width="1.6"/><rect x="8" y="17" width="18" height="14" stroke="currentColor" stroke-width="1.6"/><path d="M8 22h18M14 17v14" stroke="currentColor" stroke-width="1.6"/></svg>
+            <div><strong>GSTR-2A (B2B)</strong><span class="drop-sub">Drop the CSV here or click to browse</span></div>
+          </label>
+          <div class="drop-foot"><span>Save the B2B sheet of the portal Excel as CSV</span><button class="link" type="button" data-tpl="gst">Download template</button></div>
+        </div>
+      </div>
+
+      <div class="meta">
+        <label class="fld">Client name (for the export)<input id="mClient" type="text" placeholder="e.g. ABC Industries Pvt Ltd"></label>
+        <label class="fld">Client GSTIN<input id="mGstin" type="text" maxlength="15" placeholder="e.g. 24AAAAA0000A1Z5"></label>
+        <label class="fld">Period<input id="mPeriod" type="text" placeholder="e.g. Apr 2024 to Jun 2024"></label>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="step locked" id="step2">
+    <div class="step-no" aria-hidden="true">2</div>
+    <div class="step-body">
+      <div class="step-head">
+        <div>
+          <h2>Check column mapping</h2>
+          <p class="lead">Columns were matched by their headings. Confirm each one using the first-row preview, especially dates and amounts. Fields marked * are required.</p>
+        </div>
+      </div>
+      <div class="maps">
+        <div class="panel" id="map-books"></div>
+        <div class="panel" id="map-gst"></div>
+      </div>
+      <div class="opts">
+        <label class="fld">Amount tolerance (₹)<input id="optTol" type="number" min="0" step="0.01" value="1"></label>
+        <label class="chk"><input type="checkbox" id="optAgg" checked> Combine rate-wise lines of the same invoice</label>
+        <label class="chk"><input type="checkbox" id="optAmt" checked> Pair on GSTIN + amount when invoice no. differs</label>
+        <label class="chk"><input type="checkbox" id="optFuzzy" checked> Pair on GSTIN + similar invoice no. when amount differs</label>
+        <label class="chk"><input type="checkbox" id="optX" checked> Pair on invoice no. + amount when GSTIN differs</label>
+      </div>
+      <div class="run-row">
+        <button class="btn primary big" id="btnRun" type="button">Run reconciliation</button>
+        <span class="msg" id="runMsg" role="alert"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="step locked" id="step3">
+    <div class="step-no" aria-hidden="true">3</div>
+    <div class="step-body">
+      <div class="step-head">
+        <div>
+          <h2>Review results</h2>
+          <p class="lead" id="resLead">Run the reconciliation to see results here.</p>
+        </div>
+        <div class="head-actions">
+          <button class="btn" id="btnCsv" type="button">Export CSV (current view)</button>
+          <button class="btn primary" id="btnXlsx" type="button">Export Excel workbook</button>
+        </div>
+      </div>
+
+      <div class="overview">
+        <div class="bar" id="bar" role="img"></div>
+        <div class="stats" id="stats"></div>
+        <div class="itc" id="itc"></div>
+      </div>
+
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" data-tab="inv" aria-selected="true" type="button">Invoice-wise</button>
+        <button class="tab" role="tab" data-tab="party" aria-selected="false" type="button">Party-wise</button>
+      </div>
+      <div class="toolbar">
+        <div class="chips" id="chips"></div>
+        <input class="search" id="q" type="search" placeholder="Search GSTIN, party or invoice no." aria-label="Search">
+      </div>
+      <div class="tblwrap" id="tblwrap"></div>
+      <div class="pager" id="pager"></div>
+
+      <p class="foot-note">Differences are shown as Books minus GSTR-2A. Highlighted cells show where the two sides disagree. Invoice numbers are compared after removing separators, spaces and leading zeros, so “PIS-2024-0458” and “PIS/2024/458” are treated as the same number and noted as a format difference. ITC eligibility is governed by Section 16(2)(aa) of the CGST Act read with Rule 36(4), which refer to GSTR-2B; use this GSTR-2A reconciliation for supplier follow-up and completeness checks.</p>
+    </div>
+  </section>
+</main>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- ============ ENGINE (pure functions, no DOM) ============ -->
+<script id="engine">
+(function(root){
+'use strict';
+
+const FIELDS=[
+  {k:'gstin',  label:'Supplier GSTIN',     req:true, rx:[/gstin/i,/ctin/i,/gst\s*(no|number|reg)/i]},
+  {k:'name',   label:'Party / trade name', rx:[/trade|legal\s*name/i,/party\s*name/i,/supplier\s*name/i,/vendor/i,/party/i,/ledger/i,/particulars/i,/name/i]},
+  {k:'invno',  label:'Invoice number',     req:true, rx:[/supplier\s*inv(oice)?\.?\s*(no|num)/i,/(invoice|inv|bill)\.?\s*(no|num|#)/i,/doc(ument)?\.?\s*(no|num)/i,/\bref(erence)?\b/i,/(vch|voucher)\.?\s*(no|num)/i]},
+  {k:'invdate',label:'Invoice date',       rx:[/supplier\s*inv(oice)?\.?\s*date/i,/(invoice|inv|bill|doc(ument)?)\.?\s*date/i,/^date$/i,/^(?!.*fil).*date/i]},
+  {k:'taxable',label:'Taxable value',      req:true, rx:[/taxable/i,/assessable/i]},
+  {k:'igst',   label:'IGST',               rx:[/igst/i,/integrated\s*tax/i]},
+  {k:'cgst',   label:'CGST',               rx:[/cgst/i,/central\s*tax/i]},
+  {k:'sgst',   label:'SGST / UTGST',       rx:[/sgst|utgst/i,/state\s*\/?\s*(ut)?\s*tax/i]},
+  {k:'cess',   label:'Cess',               rx:[/cess/i]},
+  {k:'invval', label:'Invoice value',      rx:[/inv(oice)?\.?\s*value/i,/bill\s*(amount|value)/i,/gross\s*(total|amount)/i,/total\s*(invoice\s*)?(amount|value)/i]},
+  {k:'tottax', label:'Total tax (only if heads not split)', rx:[/total\s*tax/i,/tax\s*amount/i,/gst\s*amount/i]}
+];
+const HEADS=['igst','cgst','sgst','cess'];
+const GSTIN_RX=/^[0-9]{2}[A-Z0-9]{10}[0-9A-Z]{3}$/;
+
+/* ---------- parsing ---------- */
+function parseCSV(text){
+  text=String(text).replace(/^\uFEFF/,'');
+  const sample=text.slice(0,20000);
+  const count=ch=>{let n=0,q=false;for(const c of sample){if(c==='"')q=!q;else if(!q&&c===ch)n++;}return n;};
+  let d=',',best=-1;for(const c of [',',';','\t']){const n=count(c);if(n>best){best=n;d=c;}}
+  const rows=[];let row=[],f='',q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){f+='"';i++;} else q=false; } else f+=c; }
+    else if(c==='"') q=true;
+    else if(c===d){row.push(f);f='';}
+    else if(c==='\n'||c==='\r'){ if(c==='\r'&&text[i+1]==='\n')i++; row.push(f);rows.push(row);row=[];f=''; }
+    else f+=c;
+  }
+  if(f!==''||row.length){row.push(f);rows.push(row);}
+  while(rows.length&&!rows[rows.length-1].some(v=>String(v).trim()))rows.pop();
+  return rows;
+}
+function round2(n){return Math.round((n+(n>=0?1:-1)*1e-9)*100)/100;}
+function num(v){
+  if(v==null)return 0; if(typeof v==='number')return isFinite(v)?round2(v):0;
+  let s=String(v).trim(); if(!s||s==='-')return 0;
+  let neg=false; if(/^\(.*\)$/.test(s))neg=true;
+  s=s.replace(/rs\.?|inr|₹/gi,'').replace(/[^0-9.\-]/g,'');
+  if(s.startsWith('-')){neg=!neg;} s=s.replace(/-/g,'');
+  const n=parseFloat(s); if(!isFinite(n))return 0;
+  return neg?-round2(n):round2(n);
+}
+const MON={JAN:1,FEB:2,MAR:3,APR:4,MAY:5,JUN:6,JUL:7,AUG:8,SEP:9,OCT:10,NOV:11,DEC:12};
+function mk(y,m,d){
+  if(!(m>=1&&m<=12&&d>=1&&d<=31&&y>=1990&&y<=2100))return '';
+  const t=new Date(Date.UTC(y,m-1,d)); if(t.getUTCMonth()!==m-1)return '';
+  return y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+}
+function yr(s){const n=+s;return s.length<=2?2000+n:n;}
+function parseDate(v){
+  if(v==null)return ''; const s=String(v).trim(); if(!s)return '';
+  let m;
+  if(/^\d{5}(\.\d+)?$/.test(s)){const n=Math.floor(+s);if(n>30000&&n<75000){const t=new Date(Date.UTC(1899,11,30)+n*864e5);return mk(t.getUTCFullYear(),t.getUTCMonth()+1,t.getUTCDate());}}
+  if((m=s.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/)))return mk(+m[1],+m[2],+m[3]);
+  if((m=s.match(/^(\d{1,2})[-\/. ](\d{1,2})[-\/. ](\d{2}|\d{4})(?!\d)/)))return mk(yr(m[3]),+m[2],+m[1]);
+  if((m=s.match(/^(\d{1,2})[-\/. ]?([A-Za-z]{3,9})[-\/.,' ]*(\d{2}|\d{4})(?!\d)/))){const mo=MON[m[2].slice(0,3).toUpperCase()];if(mo)return mk(yr(m[3]),mo,+m[1]);}
+  if((m=s.match(/^([A-Za-z]{3,9})[ \-.]+(\d{1,2}),?[ \-]+(\d{2}|\d{4})(?!\d)/))){const mo=MON[m[1].slice(0,3).toUpperCase()];if(mo)return mk(yr(m[3]),mo,+m[2]);}
+  return '';
+}
+function fmtDate(iso){if(!iso)return '';const p=iso.split('-');return p[2]+'-'+p[1]+'-'+p[0];}
+function dayGap(a,b){if(!a||!b)return 5000;return Math.round(Math.abs(Date.parse(a)-Date.parse(b))/864e5);}
+
+/* ---------- normalisation ---------- */
+function normGstin(s){return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');}
+function normInv(s){return String(s||'').toUpperCase().split(/[^A-Z0-9]+/).map(seg=>seg.replace(/(^|[A-Z])0+(?=\d)/g,'$1')).join('');}
+function invCore(s){
+  const t=String(s||'').toUpperCase().replace(/(?<!\d)(?:20)?(\d{2})\s*[-\/]\s*(?:20)?(\d{2})(?!\d)/g,(m,a,b)=>((+a+1)%100===+b)?' ':m);
+  const runs=t.match(/\d+/g); if(!runs)return '';
+  return runs[runs.length-1].replace(/^0+(?=\d)/,'');
+}
+
+/* ---------- header detection & mapping ---------- */
+function headersFor(rows,start,span){
+  let w=0;for(let k=0;k<span;k++)w=Math.max(w,(rows[start+k]||[]).length);
+  const h=[];
+  for(let c=0;c<w;c++){const parts=[];for(let k=0;k<span;k++){const v=String((rows[start+k]||[])[c]||'').trim();if(v)parts.push(v);}h.push(parts.join(' ').replace(/\s+/g,' '));}
+  return h;
+}
+function scoreHeaders(h){let s=0;for(const F of FIELDS){if(h.some(x=>x&&F.rx.some(r=>r.test(x))))s++;}return s;}
+function detectHeader(rows){
+  let best={start:0,span:1,score:-1};
+  const lim=Math.min(rows.length,30);
+  for(let i=0;i<lim;i++){
+    for(const span of [1,2]){
+      if(i+span>rows.length)continue;
+      const sc=scoreHeaders(headersFor(rows,i,span));
+      if(sc>best.score)best={start:i,span,score:sc};
+    }
+  }
+  return {start:best.start,span:best.span};
+}
+function autoMap(h){
+  const map={},used=new Set();
+  for(const F of FIELDS){
+    map[F.k]=-1;
+    for(const r of F.rx){const i=h.findIndex((x,j)=>!used.has(j)&&x&&r.test(x));if(i>=0){map[F.k]=i;used.add(i);break;}}
+  }
+  return map;
+}
+
+/* ---------- records ---------- */
+function buildRecords(rows,hdr,map,limit){
+  const out=[]; const start=hdr.start+hdr.span;
+  const g=(r,k)=>map[k]>=0?String(r[map[k]]==null?'':r[map[k]]).trim():'';
+  const hasHeads=HEADS.some(k=>map[k]>=0);
+  for(let i=start;i<rows.length;i++){
+    const r=rows[i]; if(!r||!r.some(v=>String(v).trim()))continue;
+    const gRaw=g(r,'gstin'), inv=g(r,'invno');
+    if(/^(grand\s*)?total\b/i.test(gRaw)||/^(grand\s*)?total\b/i.test(inv)||/^(grand\s*)?total\b/i.test(String(r[0]||'').trim()))continue;
+    if(/gstin/i.test(gRaw))continue;
+    const rec={row:i+1,rows:[i+1],lines:1,gstinRaw:gRaw,gstin:normGstin(gRaw),name:g(r,'name'),invno:inv,inv_n:normInv(inv),core:invCore(inv),dateRaw:g(r,'invdate')};
+    rec.date=parseDate(rec.dateRaw);
+    rec.taxable=num(g(r,'taxable'));
+    for(const k of HEADS)rec[k]=num(g(r,k));
+    rec.heads=hasHeads;
+    rec.tax=hasHeads?round2(rec.igst+rec.cgst+rec.sgst+rec.cess):num(g(r,'tottax'));
+    rec.invval=num(g(r,'invval'));
+    if(!rec.gstin&&!rec.invno&&!rec.taxable&&!rec.tax)continue;
+    out.push(rec);
+    if(limit&&out.length>=limit)break;
+  }
+  return out;
+}
+function aggregate(recs){
+  const m=new Map(),out=[];
+  for(const r of recs){
+    if(!r.inv_n){out.push({...r,rows:[...r.rows]});continue;}
+    const k=r.gstin+'|'+r.inv_n; const e=m.get(k);
+    if(!e){const c={...r,rows:[...r.rows]};m.set(k,c);out.push(c);continue;}
+    for(const f of ['taxable','igst','cgst','sgst','cess','tax'])e[f]=round2(e[f]+r[f]);
+    e.invval=Math.max(e.invval,r.invval);
+    e.lines++; e.rows.push(r.row);
+    if(!e.date&&r.date){e.date=r.date;e.dateRaw=r.dateRaw;}
+    if(!e.name&&r.name)e.name=r.name;
+  }
+  return out;
+}
+
+/* ---------- reconciliation ---------- */
+const LABEL={match:'Match',mismatch:'Mismatch',miss2a:'Missing in 2A',missbooks:'Missing in Books'};
+const STATUS={match:'Match',mismatch:'Mismatch',miss2a:'Missing',missbooks:'Missing'};
+const ORDER={mismatch:0,miss2a:1,missbooks:2,match:3};
+
+function evaluate(b,g,basis,opt){
+  const tol=opt.tol, reasons=[], notes=[], flags={};
+  if(b.gstin!==g.gstin){flags.gstin=true;reasons.push('GSTIN differs');}
+  if(b.inv_n!==g.inv_n){flags.inv=true;reasons.push('Invoice no. differs');}
+  else if(b.invno.toUpperCase().replace(/\s+/g,'')!==g.invno.toUpperCase().replace(/\s+/g,''))notes.push('Invoice no. format differs');
+  if(b.date&&g.date&&b.date!==g.date){flags.date=true;const d=dayGap(b.date,g.date);reasons.push('Invoice date differs by '+d+' day'+(d===1?'':'s'));}
+  const dT=round2(b.taxable-g.taxable), dX=round2(b.tax-g.tax);
+  if(Math.abs(dT)>tol+1e-9){flags.taxable=true;reasons.push('Taxable value differs');}
+  if(Math.abs(dX)>tol+1e-9){flags.tax=true;reasons.push('Tax amount differs');}
+  else if(b.heads&&g.heads){
+    const dI=Math.abs(b.igst-g.igst), dC=Math.abs((b.cgst+b.sgst)-(g.cgst+g.sgst));
+    if(dI>tol+1e-9||dC>tol+1e-9){flags.head=true;reasons.push('Tax head differs (IGST vs CGST/SGST)');}
+  }
+  addCommonNotes(b,'books',notes); addCommonNotes(g,'2A',notes);
+  return {status:reasons.length?'mismatch':'match',b,g,reasons,notes,basis,flags,dTaxable:dT,dTax:dX,gstin:b.gstin||g.gstin,name:b.name||g.name};
+}
+function addCommonNotes(x,side,notes){
+  if(x.gstin&&!GSTIN_RX.test(x.gstin))notes.push('GSTIN format invalid in '+side);
+  if(!x.gstin)notes.push('GSTIN blank in '+side);
+  if(x.dateRaw&&!x.date)notes.push('Date unreadable in '+side+' ("'+x.dateRaw+'")');
+}
+function missing(b,g){
+  const x=b||g, notes=[]; addCommonNotes(x,b?'books':'2A',notes);
+  return {status:b?'miss2a':'missbooks',b,g,reasons:[b?'Not found in GSTR-2A':'Not recorded in books'],notes,basis:'',flags:{},
+    dTaxable:b?b.taxable:-g.taxable,dTax:b?b.tax:-g.tax,gstin:x.gstin,name:x.name};
+}
+function push(m,k,v){const a=m.get(k);if(a)a.push(v);else m.set(k,[v]);}
+
+function reconcile(B,G,opt){
+  const tol=opt.tol, res=[];
+  const near=(a,b)=>Math.abs(a-b)<=tol+1e-9;
+  const amtOk=(b,g)=>(b.taxable||b.tax)&&near(b.taxable,g.taxable)&&near(b.tax,g.tax);
+  const byKey=new Map(), byGstin=new Map(), byInv=new Map();
+  B.forEach(b=>b._u=false);
+  G.forEach(g=>{g._u=false;push(byKey,g.gstin+'|'+g.inv_n,g);if(g.gstin)push(byGstin,g.gstin,g);if(g.inv_n)push(byInv,g.inv_n,g);});
+  const pair=(b,g,basis)=>{b._u=g._u=true;res.push(evaluate(b,g,basis,opt));};
+
+  // Pass 1: GSTIN + invoice no. (prefer closest amount, then date)
+  for(const b of B){
+    if(!b.inv_n)continue;
+    const c=(byKey.get(b.gstin+'|'+b.inv_n)||[]).filter(x=>!x._u);
+    if(!c.length)continue;
+    c.sort((x,y)=>(Math.abs(b.tax-x.tax)+Math.abs(b.taxable-x.taxable))-(Math.abs(b.tax-y.tax)+Math.abs(b.taxable-y.taxable))||dayGap(b.date,x.date)-dayGap(b.date,y.date));
+    pair(b,c[0],'GSTIN + invoice no.');
+  }
+  // Pass 2: GSTIN + amount (invoice no. differs)
+  if(opt.amt)for(const b of B){
+    if(b._u||!b.gstin)continue;
+    let best=null,bs=Infinity;
+    for(const g of byGstin.get(b.gstin)||[]){
+      if(g._u||!amtOk(b,g))continue;
+      const s=(b.core&&b.core===g.core?0:1e6)+dayGap(b.date,g.date);
+      if(s<bs){bs=s;best=g;}
+    }
+    if(best)pair(b,best,'GSTIN + amount');
+  }
+  // Pass 3: GSTIN + similar invoice no. (amount differs)
+  if(opt.fuzzy)for(const b of B){
+    if(b._u||!b.gstin||!b.core)continue;
+    let best=null,bs=Infinity;
+    for(const g of byGstin.get(b.gstin)||[]){
+      if(g._u||g.core!==b.core)continue;
+      const s=Math.abs(b.tax-g.tax)+Math.abs(b.taxable-g.taxable)+dayGap(b.date,g.date)/1000;
+      if(s<bs){bs=s;best=g;}
+    }
+    if(best)pair(b,best,'GSTIN + similar invoice no.');
+  }
+  // Pass 4: invoice no. + amount (GSTIN differs)
+  if(opt.xgstin)for(const b of B){
+    if(b._u||!b.inv_n)continue;
+    const g=(byInv.get(b.inv_n)||[]).find(x=>!x._u&&amtOk(b,x));
+    if(g)pair(b,g,'Invoice no. + amount');
+  }
+  for(const b of B)if(!b._u)res.push(missing(b,null));
+  for(const g of G)if(!g._u)res.push(missing(null,g));
+
+  res.sort((x,y)=>ORDER[x.status]-ORDER[y.status]||String(x.gstin).localeCompare(String(y.gstin))||String((x.b||x.g).date).localeCompare(String((y.b||y.g).date)));
+  res.forEach((r,i)=>r.sr=i+1);
+  return res;
+}
+function summarize(res){
+  const s={};
+  for(const k of ['match','mismatch','miss2a','missbooks'])s[k]={n:0,bt:0,bx:0,gt:0,gx:0};
+  for(const r of res){const c=s[r.status];c.n++;if(r.b){c.bt+=r.b.taxable;c.bx+=r.b.tax;}if(r.g){c.gt+=r.g.taxable;c.gx+=r.g.tax;}}
+  const t={n:0,bt:0,bx:0,gt:0,gx:0};
+  for(const k in s){for(const f in t)t[f]+=s[k][f];for(const f of ['bt','bx','gt','gx'])s[k][f]=round2(s[k][f]);}
+  for(const f of ['bt','bx','gt','gx'])t[f]=round2(t[f]);
+  s.total=t; return s;
+}
+function partySummary(res){
+  const m=new Map();
+  for(const r of res){
+    const k=(r.b&&r.b.gstin)||(r.g&&r.g.gstin)||'(blank)';
+    let p=m.get(k);
+    if(!p){p={gstin:k,name:'',nb:0,ng:0,bt:0,bx:0,gt:0,gx:0,match:0,mismatch:0,miss2a:0,missbooks:0};m.set(k,p);}
+    if(!p.name)p.name=r.name||'';
+    if(r.b){p.nb++;p.bt+=r.b.taxable;p.bx+=r.b.tax;}
+    if(r.g){p.ng++;p.gt+=r.g.taxable;p.gx+=r.g.tax;}
+    p[r.status]++;
+  }
+  const out=[...m.values()];
+  out.forEach(p=>{for(const f of ['bt','bx','gt','gx'])p[f]=round2(p[f]);p.dt=round2(p.bt-p.gt);p.dx=round2(p.bx-p.gx);});
+  out.sort((a,b)=>Math.abs(b.dx)-Math.abs(a.dx)||a.gstin.localeCompare(b.gstin));
+  return out;
+}
+
+/* ---------- XLSX writer (stored ZIP, no dependencies) ---------- */
+function xmlEsc(s){return String(s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g,'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function colL(n){let s='';n++;while(n>0){const m=(n-1)%26;s=String.fromCharCode(65+m)+s;n=Math.floor((n-1)/26);}return s;}
+function dateSerial(iso){const p=iso.split('-').map(Number);return (Date.UTC(p[0],p[1]-1,p[2])-Date.UTC(1899,11,30))/864e5;}
+function cellXml(c,ref){
+  if(c==null||c==='')return '';
+  if(typeof c!=='object')c={v:c};
+  const s=c.s!=null?' s="'+c.s+'"':'';
+  if(c.f)return '<c r="'+ref+'"'+s+'><f>'+xmlEsc(c.f)+'</f>'+(typeof c.v==='number'&&isFinite(c.v)?'<v>'+c.v+'</v>':'')+'</c>';
+  if(c.v==null||c.v==='')return s?'<c r="'+ref+'"'+s+'/>':'';
+  if(c.d)return '<c r="'+ref+'"'+s+'><v>'+dateSerial(c.v)+'</v></c>';
+  if(typeof c.v==='number')return '<c r="'+ref+'"'+s+'><v>'+(isFinite(c.v)?c.v:0)+'</v></c>';
+  return '<c r="'+ref+'"'+s+' t="inlineStr"><is><t xml:space="preserve">'+xmlEsc(c.v)+'</t></is></c>';
+}
+function sheetXml(sh){
+  let x='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">';
+  x+='<sheetViews><sheetView workbookViewId="0"'+(sh.grid===false?' showGridLines="0"':'')+'>';
+  if(sh.freeze)x+='<pane ySplit="'+sh.freeze+'" topLeftCell="A'+(sh.freeze+1)+'" activePane="bottomLeft" state="frozen"/>';
+  x+='</sheetView></sheetViews>';
+  if(sh.widths)x+='<cols>'+sh.widths.map((w,i)=>'<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+w+'" customWidth="1"/>').join('')+'</cols>';
+  x+='<sheetData>';
+  sh.rows.forEach((row,ri)=>{
+    const rn=ri+1; let cells='';
+    (row||[]).forEach((c,ci)=>{cells+=cellXml(c,colL(ci)+rn);});
+    x+='<row r="'+rn+'"'+(sh.tallRow===rn?' ht="30" customHeight="1"':'')+'>'+cells+'</row>';
+  });
+  x+='</sheetData>';
+  if(sh.filter)x+='<autoFilter ref="'+sh.filter+'"/>';
+  return x+'</worksheet>';
+}
+const STYLES='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+
+'<numFmts count="2"><numFmt numFmtId="164" formatCode="#,##0.00;[Red]-#,##0.00"/><numFmt numFmtId="165" formatCode="dd-mm-yyyy"/></numFmts>'+
+'<fonts count="4"><font><sz val="10"/><name val="Calibri"/><family val="2"/></font><font><b/><sz val="10"/><name val="Calibri"/><family val="2"/></font><font><b/><sz val="10"/><color rgb="FFFFFFFF"/><name val="Calibri"/><family val="2"/></font><font><b/><sz val="14"/><color rgb="FF17344A"/><name val="Calibri"/><family val="2"/></font></fonts>'+
+'<fills count="8"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill>'+
+['FF17344A','FFE4F2EA','FFFCEFD6','FFFBE5E2','FFEFE6F6','FFEEF2F5'].map(c=>'<fill><patternFill patternType="solid"><fgColor rgb="'+c+'"/><bgColor indexed="64"/></patternFill></fill>').join('')+'</fills>'+
+'<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border>'+['left','right','top','bottom'].map(s=>'<'+s+' style="thin"><color rgb="FFD8E0E6"/></'+s+'>').join('')+'<diagonal/></border></borders>'+
+'<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'+
+'<cellXfs count="18">'+
+'<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'+                                                                         //0 default
+'<xf numFmtId="0" fontId="2" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf>'+ //1 header
+'<xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1"/>'+                                  //2 amount
+'<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1"/>'+                                                          //3 text
+'<xf numFmtId="0" fontId="1" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+                              //4 match
+'<xf numFmtId="0" fontId="1" fillId="4" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+                              //5 mismatch
+'<xf numFmtId="0" fontId="1" fillId="5" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+                              //6 missing in 2A
+'<xf numFmtId="0" fontId="1" fillId="6" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+                              //7 missing in books
+'<xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"/>'+                                                            //8 title
+'<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/>'+                                                            //9 bold
+'<xf numFmtId="165" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1"/>'+                                  //10 date
+'<xf numFmtId="0" fontId="1" fillId="4" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+                              //11 text highlight
+'<xf numFmtId="164" fontId="1" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1"/>'+      //12 amount highlight
+'<xf numFmtId="165" fontId="1" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1"/>'+      //13 date highlight
+'<xf numFmtId="0" fontId="1" fillId="7" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+                              //14 total label
+'<xf numFmtId="164" fontId="1" fillId="7" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1"/>'+      //15 total amount
+'<xf numFmtId="3" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1"/>'+                                    //16 integer
+'<xf numFmtId="3" fontId="1" fillId="7" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1"/>'+        //17 total integer
+'</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+
+const CRC_T=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
+function crc32(u8){let c=0xFFFFFFFF;for(let i=0;i<u8.length;i++)c=CRC_T[(c^u8[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
+function zipStore(files){
+  const enc=new TextEncoder(), parts=[], central=[]; let offset=0;
+  const now=new Date();
+  const dt=((now.getHours()<<11)|(now.getMinutes()<<5)|(now.getSeconds()>>1))&0xFFFF;
+  const dd=(((now.getFullYear()-1980)<<9)|((now.getMonth()+1)<<5)|now.getDate())&0xFFFF;
+  for(const f of files){
+    const name=enc.encode(f.name), data=typeof f.data==='string'?enc.encode(f.data):f.data, crc=crc32(data);
+    const lh=new DataView(new ArrayBuffer(30));
+    lh.setUint32(0,0x04034b50,true);lh.setUint16(4,20,true);lh.setUint16(6,0x0800,true);lh.setUint16(8,0,true);
+    lh.setUint16(10,dt,true);lh.setUint16(12,dd,true);lh.setUint32(14,crc,true);lh.setUint32(18,data.length,true);
+    lh.setUint32(22,data.length,true);lh.setUint16(26,name.length,true);lh.setUint16(28,0,true);
+    parts.push(new Uint8Array(lh.buffer),name,data);
+    const ch=new DataView(new ArrayBuffer(46));
+    ch.setUint32(0,0x02014b50,true);ch.setUint16(4,20,true);ch.setUint16(6,20,true);ch.setUint16(8,0x0800,true);
+    ch.setUint16(10,0,true);ch.setUint16(12,dt,true);ch.setUint16(14,dd,true);ch.setUint32(16,crc,true);
+    ch.setUint32(20,data.length,true);ch.setUint32(24,data.length,true);ch.setUint16(28,name.length,true);
+    ch.setUint16(30,0,true);ch.setUint16(32,0,true);ch.setUint16(34,0,true);ch.setUint16(36,0,true);
+    ch.setUint32(38,0,true);ch.setUint32(42,offset,true);
+    central.push(new Uint8Array(ch.buffer),name);
+    offset+=30+name.length+data.length;
+  }
+  const cdSize=central.reduce((a,b)=>a+b.length,0);
+  const end=new DataView(new ArrayBuffer(22));
+  end.setUint32(0,0x06054b50,true);end.setUint16(4,0,true);end.setUint16(6,0,true);end.setUint16(8,files.length,true);
+  end.setUint16(10,files.length,true);end.setUint32(12,cdSize,true);end.setUint32(16,offset,true);end.setUint16(20,0,true);
+  const all=[...parts,...central,new Uint8Array(end.buffer)];
+  const total=all.reduce((a,b)=>a+b.length,0), out=new Uint8Array(total); let p=0;
+  for(const a of all){out.set(a,p);p+=a.length;}
+  return out;
+}
+function buildXlsx(sheets){
+  const ns='http://schemas.openxmlformats.org';
+  const files=[];
+  files.push({name:'[Content_Types].xml',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="'+ns+'/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'+sheets.map((s,i)=>'<Override PartName="/xl/worksheets/sheet'+(i+1)+'.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>').join('')+'</Types>'});
+  files.push({name:'_rels/.rels',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="'+ns+'/package/2006/relationships"><Relationship Id="rId1" Type="'+ns+'/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'});
+  files.push({name:'xl/workbook.xml',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<workbook xmlns="'+ns+'/spreadsheetml/2006/main" xmlns:r="'+ns+'/officeDocument/2006/relationships"><sheets>'+sheets.map((s,i)=>'<sheet name="'+xmlEsc(s.name.replace(/[\[\]:*?\/\\]/g,'').slice(0,31))+'" sheetId="'+(i+1)+'" r:id="rId'+(i+1)+'"/>').join('')+'</sheets>'+(sheets.some(s=>s.filter)?'<definedNames>'+sheets.map((s,i)=>s.filter?'<definedName name="_xlnm._FilterDatabase" localSheetId="'+i+'" hidden="1">\''+xmlEsc(s.name.slice(0,31))+'\'!'+s.filter.replace(/([A-Z]+)(\d+)/g,'$$$1$$$2')+'</definedName>':'').join('')+'</definedNames>':'')+'</workbook>'});
+  files.push({name:'xl/_rels/workbook.xml.rels',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="'+ns+'/package/2006/relationships">'+sheets.map((s,i)=>'<Relationship Id="rId'+(i+1)+'" Type="'+ns+'/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet'+(i+1)+'.xml"/>').join('')+'<Relationship Id="rId'+(sheets.length+1)+'" Type="'+ns+'/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'});
+  files.push({name:'xl/styles.xml',data:STYLES});
+  sheets.forEach((s,i)=>files.push({name:'xl/worksheets/sheet'+(i+1)+'.xml',data:sheetXml(s)}));
+  return zipStore(files);
+}
+
+/* ---------- workbook layout ---------- */
+const XS={hdr:1,amt:2,txt:3,status:{match:4,mismatch:5,miss2a:6,missbooks:7},title:8,bold:9,date:10,txtHi:11,amtHi:12,dateHi:13,totL:14,totA:15,int:16,totI:17};
+const INV_HEAD=['Sr','Status','Category','Remarks','Match basis','GSTIN (Books)','GSTIN (2A)','Party name',
+ 'Books inv. no.','Books inv. date','Books taxable','Books IGST','Books CGST','Books SGST','Books cess','Books total tax',
+ '2A inv. no.','2A inv. date','2A taxable','2A IGST','2A CGST','2A SGST','2A cess','2A total tax',
+ 'Diff taxable (Books − 2A)','Diff tax (Books − 2A)','Books CSV row(s)','2A CSV row(s)'];
+const INV_W=[6,11,16,46,24,18,18,32,18,12,15,13,13,13,11,15,18,12,15,13,13,13,11,15,17,17,12,12];
+function invSheet(name,rows){
+  const out=[INV_HEAD.map(h=>({v:h,s:XS.hdr}))];
+  rows.forEach((r,i)=>{
+    const n=i+2, b=r.b, g=r.g, f=r.flags;
+    const T=(v,hi)=>({v:v||'',s:hi?XS.txtHi:XS.txt});
+    const A=(side,k,hi)=>side?{v:side[k],s:hi?XS.amtHi:XS.amt}:{v:'',s:XS.amt};
+    const D=(side,hi)=>side&&side.date?{v:side.date,d:true,s:hi?XS.dateHi:XS.date}:{v:side&&side.dateRaw?side.dateRaw:'',s:hi?XS.txtHi:XS.txt};
+    const remarks=r.reasons.concat(r.notes).join('; ');
+    out.push([
+      {v:i+1,s:XS.int},{v:STATUS[r.status],s:XS.status[r.status]},{v:LABEL[r.status],s:XS.txt},T(remarks),T(r.basis),
+      T(b&&b.gstinRaw,f.gstin),T(g&&g.gstinRaw,f.gstin),T(r.name),
+      T(b&&b.invno,f.inv),D(b,f.date),A(b,'taxable',f.taxable),A(b,'igst',f.head),A(b,'cgst',f.head),A(b,'sgst',f.head),A(b,'cess'),A(b,'tax',f.tax||f.head),
+      T(g&&g.invno,f.inv),D(g,f.date),A(g,'taxable',f.taxable),A(g,'igst',f.head),A(g,'cgst',f.head),A(g,'sgst',f.head),A(g,'cess'),A(g,'tax',f.tax||f.head),
+      {f:'K'+n+'-S'+n,v:r.dTaxable,s:f.taxable?XS.amtHi:XS.amt},{f:'P'+n+'-X'+n,v:r.dTax,s:(f.tax||f.head)?XS.amtHi:XS.amt},
+      T(b?b.rows.join(', '):''),T(g?g.rows.join(', '):'')
+    ]);
+  });
+  const last=Math.max(rows.length+1,2);
+  return {name,rows:out,widths:INV_W,freeze:1,tallRow:1,filter:'A1:'+colL(INV_HEAD.length-1)+last};
+}
+function partySheet(party){
+  const head=['GSTIN','Party name','Invoices (Books)','Invoices (2A)','Books taxable','Books tax','2A taxable','2A tax','Diff taxable (Books − 2A)','Diff tax (Books − 2A)','Match','Mismatch','Missing in 2A','Missing in Books'];
+  const out=[head.map(h=>({v:h,s:XS.hdr}))];
+  party.forEach((p,i)=>{const n=i+2;out.push([
+    {v:p.gstin,s:XS.txt},{v:p.name,s:XS.txt},{v:p.nb,s:XS.int},{v:p.ng,s:XS.int},{v:p.bt,s:XS.amt},{v:p.bx,s:XS.amt},{v:p.gt,s:XS.amt},{v:p.gx,s:XS.amt},
+    {f:'E'+n+'-G'+n,v:p.dt,s:XS.amt},{f:'F'+n+'-H'+n,v:p.dx,s:Math.abs(p.dx)>0.009?XS.amtHi:XS.amt},
+    {v:p.match,s:XS.int},{v:p.mismatch,s:XS.int},{v:p.miss2a,s:XS.int},{v:p.missbooks,s:XS.int}]);});
+  const L=party.length+1, T=L+1;
+  const sum=c=>({f:'SUM('+c+'2:'+c+L+')',s:'CDKLMN'.includes(c)?XS.totI:XS.totA});
+  out.push([{v:'Total',s:XS.totL},{v:'',s:XS.totL},sum('C'),sum('D'),sum('E'),sum('F'),sum('G'),sum('H'),{f:'E'+T+'-G'+T,s:XS.totA},{f:'F'+T+'-H'+T,s:XS.totA},sum('K'),sum('L'),sum('M'),sum('N')]);
+  return {name:'Party-wise',rows:out,widths:[18,34,10,10,16,15,16,15,17,17,9,10,12,13],freeze:1,tallRow:1,filter:'A1:N'+L};
+}
+function summarySheet(sum,meta,opt,counts){
+  const R=[];
+  R.push([{v:'BRS & Associates, Chartered Accountants',s:XS.title}]);
+  R.push([{v:'GSTR-2A vs books reconciliation',s:XS.bold}]);
+  R.push([]);
+  R.push([{v:'Client',s:XS.bold},meta.client||'']);
+  R.push([{v:'Client GSTIN',s:XS.bold},meta.gstin||'']);
+  R.push([{v:'Period',s:XS.bold},meta.period||'']);
+  R.push([{v:'Prepared on',s:XS.bold},meta.when]);
+  R.push([{v:'Source files',s:XS.bold},'Books: '+meta.booksFile+'   |   GSTR-2A: '+meta.gstFile]);
+  R.push([{v:'Settings',s:XS.bold},'Tolerance ₹'+opt.tol.toFixed(2)+'; rate-wise lines combined: '+(opt.agg?'Yes':'No')+'; invoices compared: Books '+counts.b+', 2A '+counts.g]);
+  R.push([]);
+  const hr=R.length+1;
+  R.push(['Category','Invoices','Books taxable','Books tax','2A taxable','2A tax','Tax difference (Books − 2A)'].map(h=>({v:h,s:XS.hdr})));
+  ['match','mismatch','miss2a','missbooks'].forEach(k=>{const c=sum[k],n=R.length+1;R.push([{v:LABEL[k],s:XS.status[k]},{v:c.n,s:XS.int},{v:c.bt,s:XS.amt},{v:c.bx,s:XS.amt},{v:c.gt,s:XS.amt},{v:c.gx,s:XS.amt},{f:'D'+n+'-F'+n,v:round2(c.bx-c.gx),s:XS.amt}]);});
+  const a=hr+1,z=hr+4,t=R.length+1;
+  R.push([{v:'Total',s:XS.totL},{f:'SUM(B'+a+':B'+z+')',s:XS.totI},{f:'SUM(C'+a+':C'+z+')',s:XS.totA},{f:'SUM(D'+a+':D'+z+')',s:XS.totA},{f:'SUM(E'+a+':E'+z+')',s:XS.totA},{f:'SUM(F'+a+':F'+z+')',s:XS.totA},{f:'D'+t+'-F'+t,s:XS.totA}]);
+  R.push([]);
+  R.push([{v:'How to read this',s:XS.bold}]);
+  R.push(['Match: GSTIN, invoice no., date, taxable value and tax agree within tolerance.']);
+  R.push(['Mismatch: the invoice was paired, but GSTIN, invoice no., date, taxable value, tax or tax head differs. See Remarks.']);
+  R.push(['Missing in 2A: recorded in books, not reflected in GSTR-2A. Follow up with the supplier before relying on this credit.']);
+  R.push(['Missing in Books: reflected in GSTR-2A, not recorded in books. Check for unrecorded purchases or unclaimed ITC.']);
+  R.push(['ITC eligibility is tested against GSTR-2B under Section 16(2)(aa) of the CGST Act read with Rule 36(4).']);
+  return {name:'Summary',rows:R,widths:[30,14,17,17,17,17,26],grid:false,tallRow:hr};
+}
+
+root.RecoEngine={FIELDS,parseCSV,detectHeader,headersFor,autoMap,buildRecords,aggregate,reconcile,summarize,partySummary,
+  parseDate,fmtDate,num,normInv,invCore,buildXlsx,invSheet,partySheet,summarySheet,LABEL,STATUS,ORDER,colL,GSTIN_RX};
+})(typeof window!=='undefined'?window:globalThis);
+</script>
+
+<!-- ============ UI ============ -->
+<script>
+(function(){
+'use strict';
+const E=window.RecoEngine;
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const SIDE={books:'Books (purchase register)',gst:'GSTR-2A'};
+const S={sides:{books:null,gst:null},opt:{tol:1,agg:true,amt:true,fuzzy:true,xgstin:true},res:null,party:null,sum:null,counts:null,
+  view:{tab:'inv',filter:'all',q:'',sort:'',dir:1,page:0}};
+const PAGE=100;
+
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtAmt=n=>Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtInt=n=>Number(n||0).toLocaleString('en-IN');
+const rs=n=>(n<-0.004?'-':'')+'₹'+fmtAmt(Math.abs(n));
+
+function toast(t,err){const el=$('#toast');el.textContent=t;el.className='show'+(err?' err':'');clearTimeout(toast._t);toast._t=setTimeout(()=>el.className='',3200);}
+function download(name,data,type){
+  const blob=data instanceof Blob?data:new Blob([data],{type});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},2000);
+}
+function safeName(s){return String(s||'').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'_').slice(0,40);}
+
+/* ---------- loading ---------- */
+function loadText(side,fileName,text){
+  const rows=E.parseCSV(text);
+  if(!rows.length){toast('That file is empty. Choose a CSV with data rows.',true);return;}
+  const hdr=E.detectHeader(rows);
+  const headers=E.headersFor(rows,hdr.start,hdr.span);
+  S.sides[side]={fileName,rows,hdr,headers,map:E.autoMap(headers)};
+  S.res=null; lockResults();
+  refreshDrop(side); renderPanel(side); refreshSteps();
+}
+function loadFile(side,file){
+  if(!file)return;
+  if(/\.(xlsx|xls|xlsm)$/i.test(file.name)){toast('This is an Excel file. In Excel use File > Save As > CSV (Comma delimited), then load the CSV.',true);return;}
+  const rd=new FileReader();
+  rd.onload=()=>loadText(side,file.name,rd.result);
+  rd.onerror=()=>toast('Could not read '+file.name+'.',true);
+  rd.readAsText(file);
+}
+function refreshDrop(side){
+  const st=S.sides[side], el=$('#drop-'+side);
+  el.classList.toggle('loaded',!!st);
+  const sub=el.querySelector('.drop-sub');
+  if(st){const n=E.buildRecords(st.rows,st.hdr,st.map).length;sub.textContent=st.fileName+' loaded, '+fmtInt(n)+' data rows. Click to replace.';}
+  else sub.textContent='Drop the CSV here or click to browse';
+}
+function refreshSteps(){
+  const ready=S.sides.books&&S.sides.gst;
+  $('#step1').classList.toggle('done',!!ready);
+  $('#step2').classList.toggle('locked',!ready);
+  if(!ready){renderPanel('books');renderPanel('gst');}
+}
+function lockResults(){$('#step3').classList.add('locked');$('#step2').classList.remove('done');}
+
+/* ---------- mapping panel ---------- */
+function sampleCell(k,rec){
+  if(!rec)return '—';
+  switch(k){
+    case 'gstin': return rec.gstinRaw?esc(rec.gstinRaw)+(E.GSTIN_RX.test(rec.gstin)?'':' <span class="bad">(not a valid GSTIN)</span>'):'—';
+    case 'name': return esc(rec.name)||'—';
+    case 'invno': return esc(rec.invno)||'—';
+    case 'invdate': return rec.date?E.fmtDate(rec.date):(rec.dateRaw?'<span class="bad">Can’t read “'+esc(rec.dateRaw)+'”</span>':'—');
+    default: return rs(rec[k]);
+  }
+}
+function renderPanel(side){
+  const st=S.sides[side], el=$('#map-'+side);
+  if(!st){el.innerHTML='<div class="panel-empty">Load the '+SIDE[side]+' file to map its columns.</div>';return;}
+  const all=E.buildRecords(st.rows,st.hdr,st.map);
+  const first=all[0];
+  const opts='<option value="-1">Not in file</option>'+st.headers.map((h,i)=>'<option value="'+i+'">'+esc(h||('Column '+E.colL(i)))+'</option>').join('');
+  el.innerHTML=
+    '<div class="panel-head"><div><h3>'+SIDE[side]+'</h3><div class="sub">'+esc(st.fileName)+', '+fmtInt(all.length)+' data rows</div></div>'+
+    '<div class="hdrctl"><label>Headings on row <input type="number" min="1" data-hstart="'+side+'" value="'+(st.hdr.start+1)+'"></label>'+
+    '<label><span class="sr">Heading rows</span><select data-hspan="'+side+'"><option value="1">1 row</option><option value="2">2 rows</option></select></label></div></div>'+
+    '<table class="maptbl"><thead><tr><th>Field</th><th>Column in your file</th><th>First row reads as</th></tr></thead><tbody>'+
+    E.FIELDS.map(F=>'<tr class="'+(F.req&&st.map[F.k]<0?'need':'')+'"><th scope="row">'+F.label+(F.req?'<span class="req" aria-label="required">*</span>':'')+'</th>'+
+      '<td><select data-side="'+side+'" data-k="'+F.k+'" aria-label="'+esc(F.label)+'">'+opts+'</select></td><td class="sample">'+sampleCell(F.k,first)+'</td></tr>').join('')+
+    '</tbody></table>';
+  el.querySelectorAll('select[data-k]').forEach(s=>s.value=String(st.map[s.dataset.k]));
+  el.querySelector('select[data-hspan]').value=String(st.hdr.span);
+}
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.matches('select[data-k]')){const st=S.sides[t.dataset.side];st.map[t.dataset.k]=+t.value;renderPanel(t.dataset.side);refreshDrop(t.dataset.side);lockResults();}
+  else if(t.matches('[data-hstart],[data-hspan]')){
+    const side=t.dataset.hstart||t.dataset.hspan, st=S.sides[side];
+    const start=Math.max(0,Math.min(st.rows.length-1,(+$('[data-hstart="'+side+'"]').value||1)-1));
+    const span=+$('[data-hspan="'+side+'"]').value||1;
+    st.hdr={start,span}; st.headers=E.headersFor(st.rows,start,span); st.map=E.autoMap(st.headers);
+    renderPanel(side);refreshDrop(side);lockResults();
+  }
+  else if(t.matches('input[type=file][data-side]')){loadFile(t.dataset.side,t.files[0]);t.value='';}
+});
+
+/* drag & drop */
+$$('.drop').forEach(d=>{
+  d.addEventListener('dragover',e=>{e.preventDefault();d.classList.add('over');});
+  d.addEventListener('dragleave',()=>d.classList.remove('over'));
+  d.addEventListener('drop',e=>{e.preventDefault();d.classList.remove('over');loadFile(d.dataset.side,e.dataTransfer.files[0]);});
+});
+window.addEventListener('dragover',e=>e.preventDefault());
+window.addEventListener('drop',e=>e.preventDefault());
+
+/* templates & sample */
+const TPL={
+  books:'Supplier GSTIN,Party Name,Supplier Invoice No,Invoice Date,Taxable Value,IGST,CGST,SGST,Cess,Invoice Value\n24AAKFS4521M1Z3,Shree Ganesh Traders,SGT/101/24-25,05-04-2024,100000,0,9000,9000,0,118000\n',
+  gst:'GSTIN of supplier,Trade/Legal name,Invoice number,Invoice Date,Invoice Value,Taxable Value,Integrated Tax,Central Tax,State/UT Tax,Cess\n24AAKFS4521M1Z3,Shree Ganesh Traders,SGT/101/24-25,05-04-2024,118000,100000,0,9000,9000,0\n'
+};
+$$('[data-tpl]').forEach(b=>b.addEventListener('click',()=>{const s=b.dataset.tpl;download(s==='books'?'Books_template.csv':'GSTR2A_template.csv','\uFEFF'+TPL[s],'text/csv');}));
+
+function sampleData(){
+  const books=[['Supplier GSTIN','Party Name','Supplier Invoice No','Invoice Date','Taxable Value','IGST','CGST','SGST','Cess','Invoice Value'],
+    ['24AAKFS4521M1Z3','Shree Ganesh Traders','SGT/101/24-25','05-04-2024',100000,0,9000,9000,0,118000],
+    ['24AAKFS4521M1Z3','Shree Ganesh Traders','SGT/115/24-25','12-05-2024',45000,0,4050,4050,0,53100],
+    ['24AAKFS4521M1Z3','Shree Ganesh Traders','SGT/130/24-25','03-06-2024',72500,0,6525,6525,0,85550],
+    ['24AABCP7781Q1ZK','Patel Industrial Supplies','PIS-2024-0458','18-04-2024',25000,0,2250,2250,0,29500],
+    ['24AABCP7781Q1ZK','Patel Industrial Supplies','PIS/2024/0502','22-05-2024',50000,0,4500,4500,0,59000],
+    ['24AABCP7781Q1ZK','Patel Industrial Supplies','PIS/2024/0533','10-06-2024',18000,0,1620,1620,0,21240],
+    ['24AAQFK2290B1Z6','Krishna Packaging LLP','KP/778','09-05-2024',32000,0,2880,2880,0,37760],
+    ['24AAQFK2290B1Z6','Krishna Packaging LLP','KP/801','27-06-2024',15600,0,1404,1404,0,18408],
+    ['27AAGCN6612H1Z9','Navkar Steel Corporation','NSC/2398','15-05-2024',210000,0,18900,18900,0,247800],
+    ['27AAGCN6612H1Z9','Navkar Steel Corporation','NSC/2410','04-06-2024',185000,33300,0,0,0,218300],
+    ['24ABZPO5532K1ZQ','Om Logistics','OL/2291','30-06-2024',12000,0,1080,1080,0,14160],
+    ['08AAICS3345F1ZP','Sigma Chemicals Pvt Ltd','SC/24/1187','19-04-2024',64000,11520,0,0,0,75520],
+    ['24AAMFM1209C1Z7','Mahavir Hardware','MH-0091','11-06-2024',30000,0,2400,2400,0,34800]];
+  const g=(gs,n,inv,dt,val,pos,rate,tx,ig,cg,sg)=>[gs,n,inv,'Regular',dt,val,pos,'N',rate,tx,ig,cg,sg,0,'Y','11-07-2024'];
+  const gst=[['Goods and Services Tax - GSTR 2A'],['Taxable inward supplies received from registered persons'],[''],
+    ['GSTIN of supplier','Trade/Legal name of the Supplier','Invoice details','','','','Place of supply','Supply Attract Reverse Charge','Rate (%)','Taxable Value (₹)','Tax Amount','','','','GSTR-1/5 Filing Status','GSTR-1/5 Filing Date'],
+    ['','','Invoice number','Invoice type','Invoice Date','Invoice Value (₹)','','','','','Integrated Tax (₹)','Central Tax (₹)','State/UT Tax (₹)','Cess (₹)','',''],
+    g('24AAKFS4521M1Z3','Shree Ganesh Traders','SGT/101/24-25','05-04-2024',118000,'24-Gujarat',18,100000,0,9000,9000),
+    g('24AAKFS4521M1Z3','Shree Ganesh Traders','SGT/115/24-25','14-05-2024',53100,'24-Gujarat',18,45000,0,4050,4050),
+    g('24AAKFS4521M1Z3','Shree Ganesh Traders','SGT/130/24-25','03-06-2024',85550,'24-Gujarat',18,72500,0,6525,6525),
+    g('24AABCP7781Q1ZK','Patel Industrial Supplies','PIS/2024/458','18-04-2024',29500,'24-Gujarat',18,25000,0,2250,2250),
+    g('24AABCP7781Q1ZK','Patel Industrial Supplies','PIS/2024/0502','22-05-2024',57230,'24-Gujarat',18,48500,0,4365,4365),
+    g('24AABCP7781Q1ZK','Patel Industrial Supplies','PIS/2024/0533','10-06-2024',21240,'24-Gujarat',18,18000,0,1620,1620),
+    g('24AAQFK2290B1Z6','Krishna Packaging LLP','KP/787','09-05-2024',37760,'24-Gujarat',18,32000,0,2880,2880),
+    g('24AAQFK2290B1Z6','Krishna Packaging LLP','KP/801','27-06-2024',18408,'24-Gujarat',18,15600,0,1404,1404),
+    g('27AAGCN6612H1Z9','Navkar Steel Corporation','NSC/2398','15-05-2024',247800,'24-Gujarat',18,210000,37800,0,0),
+    g('27AAGCN6612H1Z9','Navkar Steel Corporation','NSC/2410','04-06-2024',218300,'24-Gujarat',18,185000,33300,0,0),
+    g('08AAICS3354F1ZP','Sigma Chemicals Pvt Ltd','SC/24/1187','19-04-2024',75520,'24-Gujarat',18,64000,11520,0,0),
+    g('24AAMFM1209C1Z7','Mahavir Hardware','MH-0091','11-06-2024',34800,'24-Gujarat',12,10000,0,600,600),
+    g('24AAMFM1209C1Z7','Mahavir Hardware','MH-0091','11-06-2024',34800,'24-Gujarat',18,20000,0,1800,1800),
+    g('24AFHPJ9921L1Z2','Jay Ambe Electricals','JAE/56','08-06-2024',25960,'24-Gujarat',18,22000,0,1980,1980),
+    ['Total','','','','','','','','',870600,82620,47554,47554,0,'','']];
+  const toCsv=a=>a.map(r=>r.map(v=>{const s=String(v);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(',')).join('\n');
+  loadText('books','sample_books.csv',toCsv(books));
+  loadText('gst','sample_gstr2a.csv',toCsv(gst));
+  if(!$('#mClient').value)$('#mClient').value='Sample Client Pvt Ltd';
+  if(!$('#mPeriod').value)$('#mPeriod').value='Apr 2024 to Jun 2024';
+  toast('Sample files loaded. Check the mapping, then run the reconciliation.');
+}
+$('#btnSample').addEventListener('click',sampleData);
+
+/* ---------- run ---------- */
+function run(){
+  const msg=$('#runMsg'); msg.textContent='';
+  const need=[];
+  for(const side of ['books','gst'])for(const F of E.FIELDS)if(F.req&&S.sides[side].map[F.k]<0)need.push(F.label+' ('+(side==='books'?'Books':'GSTR-2A')+')');
+  for(const side of ['books','gst']){const m=S.sides[side].map;if(!['igst','cgst','sgst','cess','tottax'].some(k=>m[k]>=0))need.push('tax columns ('+(side==='books'?'Books':'GSTR-2A')+')');}
+  if(need.length){msg.textContent='Map these columns first: '+need.join(', ')+'.';return;}
+  const tol=parseFloat($('#optTol').value);
+  S.opt={tol:isFinite(tol)&&tol>=0?tol:1,agg:$('#optAgg').checked,amt:$('#optAmt').checked,fuzzy:$('#optFuzzy').checked,xgstin:$('#optX').checked};
+  let B=E.buildRecords(S.sides.books.rows,S.sides.books.hdr,S.sides.books.map);
+  let G=E.buildRecords(S.sides.gst.rows,S.sides.gst.hdr,S.sides.gst.map);
+  if(!B.length||!G.length){msg.textContent='No data rows found in '+(!B.length?'the books file':'the GSTR-2A file')+'. Check the heading row setting.';return;}
+  if(S.opt.agg){B=E.aggregate(B);G=E.aggregate(G);}
+  S.res=E.reconcile(B,G,S.opt); S.sum=E.summarize(S.res); S.party=E.partySummary(S.res); S.counts={b:B.length,g:G.length};
+  S.view={tab:'inv',filter:'all',q:'',sort:'',dir:1,page:0}; $('#q').value='';
+  $('#step2').classList.add('done'); $('#step3').classList.remove('locked'); $('#step3').classList.add('done');
+  renderResults();
+  $('#step3').scrollIntoView({behavior:'smooth',block:'start'});
+}
+$('#btnRun').addEventListener('click',run);
+
+/* ---------- results ---------- */
+const KEYS=['match','mismatch','miss2a','missbooks'];
+function renderResults(){
+  const s=S.sum, tot=s.total.n||1;
+  $('#resLead').textContent='Compared '+fmtInt(S.counts.b)+' invoices in books with '+fmtInt(S.counts.g)+' in GSTR-2A at a tolerance of ₹'+S.opt.tol.toFixed(2)+'.';
+  $('#bar').innerHTML=KEYS.filter(k=>s[k].n).map(k=>{const p=s[k].n/tot*100;return '<span class="'+k+'" style="width:'+p+'%" title="'+E.LABEL[k]+': '+s[k].n+'">'+(p>=7?Math.round(p)+'%':'')+'</span>';}).join('');
+  $('#bar').setAttribute('aria-label',KEYS.map(k=>E.LABEL[k]+' '+s[k].n).join(', '));
+  const sub={
+    match:'Tax '+rs(s.match.bx),
+    mismatch:'Tax difference '+rs(s.mismatch.bx-s.mismatch.gx),
+    miss2a:'Books tax not in 2A '+rs(s.miss2a.bx),
+    missbooks:'2A tax not in books '+rs(s.missbooks.gx)};
+  $('#stats').innerHTML=KEYS.map(k=>'<button class="stat'+(S.view.filter===k?' on':'')+'" type="button" data-f="'+k+'"><span class="dot '+k+'"></span><span class="lbl">'+E.LABEL[k]+'</span><span class="cnt">'+fmtInt(s[k].n)+'</span><span class="amt">'+sub[k]+'</span></button>').join('');
+  const d=s.total.bx-s.total.gx;
+  $('#itc').innerHTML='<span>Tax as per books<b>'+rs(s.total.bx)+'</b></span><span>Tax as per GSTR-2A<b>'+rs(s.total.gx)+'</b></span><span>Difference (books − 2A)<b class="'+(Math.abs(d)>0.009?'neg':'')+'">'+rs(d)+'</b></span>';
+  renderTable();
+}
+function filteredInv(){
+  let rows=S.res; const v=S.view;
+  if(v.filter!=='all')rows=rows.filter(r=>r.status===v.filter);
+  const q=v.q.trim().toUpperCase();
+  if(q)rows=rows.filter(r=>[r.name,r.b&&r.b.gstin,r.g&&r.g.gstin,r.b&&r.b.invno,r.g&&r.g.invno].some(x=>x&&String(x).toUpperCase().includes(q)));
+  if(v.sort){
+    const get={sr:r=>r.sr,status:r=>E.ORDER[r.status],gstin:r=>r.gstin||'',name:r=>(r.name||'').toUpperCase(),
+      binv:r=>r.b?r.b.invno:'',bdate:r=>r.b?r.b.date:'',btx:r=>r.b?r.b.taxable:-Infinity,btax:r=>r.b?r.b.tax:-Infinity,
+      ginv:r=>r.g?r.g.invno:'',gdate:r=>r.g?r.g.date:'',gtx:r=>r.g?r.g.taxable:-Infinity,gtax:r=>r.g?r.g.tax:-Infinity,
+      dtx:r=>r.dTaxable,dtax:r=>r.dTax}[v.sort];
+    rows=[...rows].sort((a,b)=>{const x=get(a),y=get(b);return (x<y?-1:x>y?1:0)*v.dir||a.sr-b.sr;});
+  }
+  return rows;
+}
+function filteredParty(){
+  let rows=S.party; const v=S.view; const q=v.q.trim().toUpperCase();
+  if(q)rows=rows.filter(p=>p.gstin.includes(q)||(p.name||'').toUpperCase().includes(q));
+  if(v.sort){
+    const get=p=>v.sort==='name'?(p.name||'').toUpperCase():p[v.sort];
+    rows=[...rows].sort((a,b)=>{const x=get(a),y=get(b);return (x<y?-1:x>y?1:0)*v.dir;});
+  }
+  return rows;
+}
+function th(label,key,cls){
+  const v=S.view, s=v.sort===key?(v.dir>0?'ascending':'descending'):'none';
+  return '<th'+(cls?' class="'+cls+'"':'')+(key?' data-sort="'+key+'" aria-sort="'+s+'"':'')+'>'+label+'</th>';
+}
+function amtTd(v,hi,extra){
+  const z=Math.abs(v)<0.005;
+  return '<td class="num'+(hi?' hi':'')+(extra?' '+extra:'')+(z&&!hi?' zero':'')+'">'+fmtAmt(v)+'</td>';
+}
+function renderTable(){
+  const v=S.view, wrap=$('#tblwrap');
+  $$('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.tab===v.tab)));
+  if(v.tab==='inv'){
+    const c={all:S.res.length};KEYS.forEach(k=>c[k]=S.sum[k].n);
+    $('#chips').innerHTML=['all',...KEYS].map(k=>'<button class="chip" type="button" data-f="'+k+'" aria-pressed="'+(v.filter===k)+'">'+(k==='all'?'All':E.LABEL[k])+'<span class="c">'+fmtInt(c[k])+'</span></button>').join('');
+    $$('.stat').forEach(s=>s.classList.toggle('on',s.dataset.f===v.filter));
+    const rows=filteredInv(); const pages=Math.max(1,Math.ceil(rows.length/PAGE)); v.page=Math.min(v.page,pages-1);
+    const slice=rows.slice(v.page*PAGE,(v.page+1)*PAGE);
+    if(!rows.length){wrap.innerHTML='<div class="empty">No invoices match this filter. Clear the search or choose another status.</div>';$('#pager').innerHTML='';return;}
+    wrap.innerHTML='<table class="res"><thead><tr>'+
+      '<th rowspan="2" data-sort="sr" class="num" aria-sort="'+(v.sort==='sr'?(v.dir>0?'ascending':'descending'):'none')+'">#</th>'+
+      '<th rowspan="2" data-sort="status" aria-sort="'+(v.sort==='status'?(v.dir>0?'ascending':'descending'):'none')+'">Status</th><th rowspan="2">Remarks</th>'+
+      '<th rowspan="2" data-sort="gstin" aria-sort="'+(v.sort==='gstin'?(v.dir>0?'ascending':'descending'):'none')+'">GSTIN</th>'+
+      '<th rowspan="2" data-sort="name" aria-sort="'+(v.sort==='name'?(v.dir>0?'ascending':'descending'):'none')+'">Party</th>'+
+      '<th colspan="4" class="grp b sep">Books</th><th colspan="4" class="grp g sep">GSTR-2A</th><th colspan="2" class="grp sep">Difference</th></tr><tr>'+
+      th('Invoice no.','binv','sep')+th('Date','bdate')+th('Taxable','btx','num')+th('Tax','btax','num')+
+      th('Invoice no.','ginv','sep')+th('Date','gdate')+th('Taxable','gtx','num')+th('Tax','gtax','num')+
+      th('Taxable','dtx','num sep')+th('Tax','dtax','num')+'</tr></thead><tbody>'+
+      slice.map(rowInv).join('')+'</tbody></table>';
+    $('#pager').innerHTML='<span>Showing '+fmtInt(v.page*PAGE+1)+' to '+fmtInt(Math.min(rows.length,(v.page+1)*PAGE))+' of '+fmtInt(rows.length)+'</span>'+
+      (pages>1?'<span><button class="btn" type="button" data-pg="-1"'+(v.page?'':' disabled')+'>Previous</button> <button class="btn" type="button" data-pg="1"'+(v.page<pages-1?'':' disabled')+'>Next</button></span>':'');
+  }else{
+    $('#chips').innerHTML='<span style="font-size:12.5px;color:var(--muted)">Sorted by largest tax difference. Click a party to see its invoices.</span>';
+    const rows=filteredParty();
+    if(!rows.length){wrap.innerHTML='<div class="empty">No parties match this search.</div>';$('#pager').innerHTML='';return;}
+    wrap.innerHTML='<table class="res"><thead><tr>'+
+      '<th rowspan="2" data-sort="gstin" aria-sort="'+(v.sort==='gstin'?(v.dir>0?'ascending':'descending'):'none')+'">GSTIN</th>'+
+      '<th rowspan="2" data-sort="name" aria-sort="'+(v.sort==='name'?(v.dir>0?'ascending':'descending'):'none')+'">Party</th>'+
+      '<th colspan="3" class="grp b sep">Books</th><th colspan="3" class="grp g sep">GSTR-2A</th><th colspan="2" class="grp sep">Difference</th><th colspan="4" class="grp sep">Invoices by status</th></tr><tr>'+
+      th('Invoices','nb','num sep')+th('Taxable','bt','num')+th('Tax','bx','num')+
+      th('Invoices','ng','num sep')+th('Taxable','gt','num')+th('Tax','gx','num')+
+      th('Taxable','dt','num sep')+th('Tax','dx','num')+
+      th('Match','match','num sep')+th('Mismatch','mismatch','num')+th('Missing in 2A','miss2a','num')+th('Missing in books','missbooks','num')+
+      '</tr></thead><tbody>'+rows.map(p=>'<tr class="party-link" data-gstin="'+esc(p.gstin)+'" tabindex="0">'+
+        '<td class="mono">'+esc(p.gstin)+'</td><td class="party">'+esc(p.name)+'</td>'+
+        '<td class="num sep">'+fmtInt(p.nb)+'</td>'+amtTd(p.bt)+amtTd(p.bx)+
+        '<td class="num sep">'+fmtInt(p.ng)+'</td>'+amtTd(p.gt)+amtTd(p.gx)+
+        amtTd(p.dt,false,'sep'+(p.dt<-0.005?' neg':''))+amtTd(p.dx,Math.abs(p.dx)>S.opt.tol)+
+        '<td class="num sep">'+(p.match||'')+'</td><td class="num">'+(p.mismatch||'')+'</td><td class="num">'+(p.miss2a||'')+'</td><td class="num">'+(p.missbooks||'')+'</td></tr>').join('')+
+      '</tbody></table>';
+    $('#pager').innerHTML='<span>'+fmtInt(rows.length)+' parties</span>';
+  }
+}
+function rowInv(r){
+  const b=r.b,g=r.g,f=r.flags;
+  const sub=r.status==='miss2a'?'<span class="pill-sub">in GSTR-2A</span>':r.status==='missbooks'?'<span class="pill-sub">in books</span>':'';
+  const gst=f.gstin?'<div class="hi-wrap">'+esc(b.gstinRaw)+'<br>'+esc(g.gstinRaw)+'</div>':esc(r.gstin);
+  const d=x=>x?(x.date?E.fmtDate(x.date):'<span class="bad">'+esc(x.dateRaw)+'</span>'):'';
+  const inv=x=>x?esc(x.invno)+(x.lines>1?' <span title="Combined from '+x.lines+' lines" style="color:var(--muted)">('+x.lines+')</span>':''):'';
+  const amt=(x,k,hi,cls)=>x?amtTd(x[k],hi,cls):'<td class="num'+(cls?' '+cls:'')+'"></td>';
+  return '<tr>'+
+    '<td class="num">'+r.sr+'</td>'+
+    '<td><span class="pill '+r.status+'">'+E.STATUS[r.status]+'</span>'+sub+'</td>'+
+    '<td class="rm">'+esc(r.reasons.join('; '))+(r.notes.length?'<span class="note">'+esc(r.notes.join('; '))+'</span>':'')+(r.basis?'<span class="note">Paired on '+esc(r.basis)+'</span>':'')+'</td>'+
+    '<td class="mono'+(f.gstin?' hi':'')+'">'+gst+'</td>'+
+    '<td class="party">'+esc(r.name)+'</td>'+
+    '<td class="inv sep'+(f.inv?' hi':'')+'">'+inv(b)+'</td><td class="'+(f.date?'hi':'')+'" style="white-space:nowrap">'+d(b)+'</td>'+
+    amt(b,'taxable',f.taxable)+amt(b,'tax',f.tax||f.head)+
+    '<td class="inv sep'+(f.inv?' hi':'')+'">'+inv(g)+'</td><td class="'+(f.date?'hi':'')+'" style="white-space:nowrap">'+d(g)+'</td>'+
+    amt(g,'taxable',f.taxable,'')+amt(g,'tax',f.tax||f.head)+
+    amtTd(r.dTaxable,false,'sep'+(r.dTaxable<-0.005?' neg':''))+amtTd(r.dTax,false,r.dTax<-0.005?'neg':'')+
+    '</tr>';
+}
+
+/* results interactions */
+$('#step3').addEventListener('click',e=>{
+  const t=e.target.closest('[data-f],[data-sort],[data-pg],.tab,.party-link');
+  if(!t)return; const v=S.view;
+  if(t.classList.contains('tab')){v.tab=t.dataset.tab;v.sort='';v.dir=1;v.page=0;renderTable();return;}
+  if(t.dataset.f){v.tab='inv';v.filter=v.filter===t.dataset.f&&t.classList.contains('stat')?'all':t.dataset.f;v.page=0;renderTable();return;}
+  if(t.dataset.sort){if(v.sort===t.dataset.sort)v.dir=-v.dir;else{v.sort=t.dataset.sort;v.dir=['btx','btax','gtx','gtax','dtx','dtax','bt','bx','gt','gx','dt','dx','nb','ng','match','mismatch','miss2a','missbooks'].includes(v.sort)?-1:1;}v.page=0;renderTable();return;}
+  if(t.dataset.pg){v.page+=+t.dataset.pg;renderTable();$('#tblwrap').scrollTop=0;return;}
+  if(t.classList.contains('party-link')){v.tab='inv';v.filter='all';v.q=t.dataset.gstin;$('#q').value=v.q;v.page=0;v.sort='';renderTable();}
+});
+$('#step3').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.classList.contains('party-link'))e.target.click();});
+let qt;$('#q').addEventListener('input',e=>{clearTimeout(qt);qt=setTimeout(()=>{S.view.q=e.target.value;S.view.page=0;renderTable();},150);});
+
+/* ---------- exports ---------- */
+function meta(){
+  const n=new Date();
+  return {client:$('#mClient').value.trim(),gstin:$('#mGstin').value.trim().toUpperCase(),period:$('#mPeriod').value.trim(),
+    when:n.toLocaleDateString('en-GB').replace(/\//g,'-')+' '+n.toTimeString().slice(0,5),
+    booksFile:S.sides.books.fileName,gstFile:S.sides.gst.fileName};
+}
+function baseName(){const m=meta();return ['GSTR2A_Reco',safeName(m.client),safeName(m.period)].filter(Boolean).join('_');}
+$('#btnXlsx').addEventListener('click',()=>{
+  if(!S.res)return;
+  try{
+    const by=k=>S.res.filter(r=>r.status===k);
+    const bytes=E.buildXlsx([
+      E.summarySheet(S.sum,meta(),S.opt,S.counts),
+      E.invSheet('All invoices',S.res),
+      E.invSheet('Mismatch',by('mismatch')),
+      E.invSheet('Missing in 2A',by('miss2a')),
+      E.invSheet('Missing in Books',by('missbooks')),
+      E.invSheet('Matched',by('match')),
+      E.partySheet(S.party)]);
+    download(baseName()+'.xlsx',new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+    toast('Excel workbook exported.');
+  }catch(err){console.error(err);toast('Export failed: '+err.message,true);}
+});
+function csvCell(v){
+  if(v==null)return '';
+  if(typeof v==='number')return String(v);
+  let s=String(v); if(/^[=+@]/.test(s))s="'"+s;
+  return /[",\n\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
+}
+$('#btnCsv').addEventListener('click',()=>{
+  if(!S.res)return;
+  let rows;
+  if(S.view.tab==='inv'){
+    rows=[['Sr','Status','Category','Remarks','Match basis','GSTIN (Books)','GSTIN (2A)','Party','Books inv no','Books inv date','Books taxable','Books tax','2A inv no','2A inv date','2A taxable','2A tax','Diff taxable','Diff tax']];
+    filteredInv().forEach(r=>{const b=r.b,g=r.g;rows.push([r.sr,E.STATUS[r.status],E.LABEL[r.status],r.reasons.concat(r.notes).join('; '),r.basis,b?b.gstinRaw:'',g?g.gstinRaw:'',r.name,
+      b?b.invno:'',b?(b.date?E.fmtDate(b.date):b.dateRaw):'',b?b.taxable:'',b?b.tax:'',g?g.invno:'',g?(g.date?E.fmtDate(g.date):g.dateRaw):'',g?g.taxable:'',g?g.tax:'',r.dTaxable,r.dTax]);});
+  }else{
+    rows=[['GSTIN','Party','Invoices (Books)','Books taxable','Books tax','Invoices (2A)','2A taxable','2A tax','Diff taxable','Diff tax','Match','Mismatch','Missing in 2A','Missing in Books']];
+    filteredParty().forEach(p=>rows.push([p.gstin,p.name,p.nb,p.bt,p.bx,p.ng,p.gt,p.gx,p.dt,p.dx,p.match,p.mismatch,p.miss2a,p.missbooks]));
+  }
+  download(baseName()+(S.view.tab==='inv'?'_invoices':'_parties')+'.csv','\uFEFF'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n'),'text/csv');
+  toast('CSV exported ('+fmtInt(rows.length-1)+' rows).');
+});
+
+renderPanel('books');renderPanel('gst');
+})();
+</script>
+</body>
+</html>

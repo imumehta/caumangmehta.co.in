@@ -1,0 +1,849 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tax Audit Applicability — BRS &amp; Associates</title>
+<style>
+:root{
+  --paper:#F2F4F3;--sheet:#fff;--ink:#16202B;--muted:#59656F;--rule:#D2D8D4;--rule2:#E5E9E6;
+  --brand:#1D3A57;--brand2:#2A5279;--pass:#0E6A49;--passbg:#E3F1E9;--fail:#AE261C;--failbg:#FBE8E6;
+  --rev:#875200;--revbg:#FAEFD9;--focus:#2463EB;
+  --serif:Charter,"Bitstream Charter","Sitka Text",Cambria,"Iowan Old Style",Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font:15px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;padding:18px clamp(16px,4vw,40px) 14px;background:var(--brand);color:#fff}
+.firm{font-size:13px;opacity:.82}
+h1{font:600 26px/1.15 var(--serif);margin:2px 0 0}
+.caseBar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.caseBar select{min-width:230px;background:#fff}
+.caseBar .btn{background:transparent;border-color:rgba(255,255,255,.55)}
+.caseBar .btn:hover{background:rgba(255,255,255,.12)}
+details.menu{position:relative}
+details.menu summary{list-style:none;cursor:pointer;padding:8px 14px;border:1px solid rgba(255,255,255,.55);border-radius:4px;font-size:14px}
+details.menu summary::-webkit-details-marker{display:none}
+details.menu[open] .mlist{display:flex}
+.mlist{display:none;flex-direction:column;position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--rule);border-radius:6px;min-width:210px;z-index:20;box-shadow:0 8px 24px rgba(16,32,48,.16);overflow:hidden}
+.mlist button{border:0;background:#fff;color:var(--ink);text-align:left;padding:10px 14px;font:inherit;font-size:14px;cursor:pointer}
+.mlist button:hover{background:var(--paper)}
+.mlist button.danger{color:var(--fail)}
+nav.steps{display:flex;align-items:stretch;background:var(--sheet);border-bottom:1px solid var(--rule);padding:0 clamp(16px,4vw,40px);overflow-x:auto;position:sticky;top:0;z-index:10}
+nav.steps button{border:0;background:none;padding:14px 14px 11px;font:inherit;font-size:14.5px;color:var(--muted);border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+nav.steps button b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;border:1.5px solid currentColor;font-size:12px;margin-right:7px}
+nav.steps button.on{color:var(--ink);border-bottom-color:var(--brand)}
+nav.steps button.on b{background:var(--brand);border-color:var(--brand);color:#fff}
+.chip{margin-left:auto;align-self:center;padding:5px 12px;border-radius:999px;font-size:13px;font-weight:600;white-space:nowrap}
+.s-req{--c:var(--fail);--cb:var(--failbg)}.s-not{--c:var(--pass);--cb:var(--passbg)}.s-review{--c:var(--rev);--cb:var(--revbg)}.s-none{--c:var(--muted);--cb:var(--rule2)}
+.chip{background:var(--cb);color:var(--c)}
+main{max-width:1200px;margin:0 auto;padding:24px clamp(16px,4vw,40px) 64px}
+.tab{display:none}.tab.on{display:block}
+fieldset{border:1px solid var(--rule);background:var(--sheet);border-radius:6px;padding:16px 20px 20px;margin:0 0 18px;min-width:0}
+legend{font:600 17px var(--serif);padding:0 6px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
+@media (max-width:860px){.cols{grid-template-columns:1fr}}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px 18px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+label.f.chk{flex-direction:row;align-items:center;gap:8px;color:var(--ink);font-size:14px}
+input,select,textarea{font:inherit;font-size:14.5px;color:var(--ink);padding:8px 10px;border:1px solid #BFC8C3;border-radius:4px;background:#fff;min-width:0;width:100%}
+input[type=checkbox]{width:auto}
+input.amt{text-align:right;font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+small.w{color:var(--muted);font-size:12px;min-height:1.1em;text-align:right}
+.hint{color:var(--muted);font-size:13.5px;margin:0 0 12px;max-width:78ch}
+.btn{font:inherit;font-size:14px;padding:8px 14px;border-radius:4px;border:1px solid var(--brand);background:var(--brand);color:#fff;cursor:pointer;white-space:nowrap}
+.btn.ghost{background:#fff;color:var(--brand)}
+.btn.sm{padding:4px 10px;font-size:13px}
+.btn:hover{filter:brightness(1.08)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.spacer{flex:1}
+.tw{overflow-x:auto;border:1px solid var(--rule);border-radius:6px;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:7px 10px;border-bottom:1px solid var(--rule2);text-align:left;vertical-align:top}
+th{font-weight:600;color:var(--muted);font-size:12.5px;background:#F7F9F8}
+tr:last-child td{border-bottom:0}
+td:first-child{white-space:nowrap}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.tot td{font-weight:600;background:#F7F9F8}
+td select{padding:4px 6px;font-size:13px}
+.muted{color:var(--muted)}
+h3{font:600 19px var(--serif);margin:28px 0 10px}
+h3 small{font:400 13px var(--sans);color:var(--muted);margin-left:8px}
+/* files */
+.drop{border:1.5px dashed #94A29B;border-radius:6px;padding:22px 16px;text-align:center;background:#FAFBFA;cursor:pointer;color:var(--muted)}
+.drop.over{border-color:var(--brand);background:#EDF2F7;color:var(--brand)}
+.drop strong{color:var(--ink);display:block;font-size:15px;margin-bottom:2px}
+.fcard{border:1px solid var(--rule);border-radius:6px;margin-top:14px;background:#fff}
+.fhead{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid var(--rule2)}
+.fhead b{font-size:14.5px;word-break:break-all}
+.fmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;padding:12px 14px;border-bottom:1px solid var(--rule2);background:#FBFCFB}
+.fmap label.f{font-size:12px}
+.fmap select,.fmap input{padding:5px 7px;font-size:13px}
+.fcard table{font-size:13px}
+.warn{color:var(--rev);font-size:13px;padding:8px 14px;margin:0}
+/* summary strip */
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));border:1px solid var(--rule);border-radius:6px;background:#fff;margin-bottom:16px}
+.strip div{padding:12px 16px;border-right:1px solid var(--rule2)}
+.strip div:last-child{border-right:0}
+.strip dt{font-size:12px;color:var(--muted)}
+.strip dd{margin:2px 0 0;font:600 18px var(--serif);font-variant-numeric:tabular-nums}
+.strip dd.bad{color:var(--fail)}.strip dd.good{color:var(--pass)}
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:10px}
+.filters label.f{min-width:150px}
+.filters .grow{flex:1;min-width:200px}
+.tag{display:inline-block;font-size:11.5px;padding:1px 7px;border-radius:3px;background:var(--rule2);color:var(--muted);white-space:nowrap}
+.tag.ov{background:#E6ECF5;color:var(--brand)}
+.why{font-size:12px;color:var(--muted)}
+.pager{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:10px;font-size:13px}
+/* verdict */
+.verdict{display:grid;grid-template-columns:1.35fr 1fr;border:1px solid var(--rule);border-radius:8px;overflow:hidden;background:#fff;margin-bottom:20px}
+@media (max-width:860px){.verdict{grid-template-columns:1fr}}
+.v-main{padding:24px 28px 22px;border-left:10px solid var(--c);background:linear-gradient(90deg,var(--cb),#fff 75%)}
+.v-meta{font-size:13px;color:var(--muted);margin:0}
+.v-main h2{font:600 clamp(26px,3.6vw,36px)/1.08 var(--serif);margin:6px 0 10px;color:var(--c)}
+.v-basis{font-weight:600;margin:0 0 4px}
+.v-why{margin:0;max-width:62ch}
+.v-figs{display:grid;grid-template-columns:1fr 1fr;margin:0;border-left:1px solid var(--rule2)}
+.v-figs div{padding:13px 18px;border-bottom:1px solid var(--rule2);border-right:1px solid var(--rule2)}
+.v-figs dt{font-size:12px;color:var(--muted)}
+.v-figs dd{margin:2px 0 0;font:600 18px var(--serif);font-variant-numeric:tabular-nums}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:860px){.two{grid-template-columns:1fr}}
+.tk{font:700 18px/1 var(--serif);width:34px;text-align:center}
+.tk.x{color:var(--fail)}.tk.ok{color:var(--pass)}.tk.na{color:#9AA4AC}.tk.i{color:var(--brand)}
+.legend{font-size:12.5px;color:var(--muted);margin:6px 0 0}
+.flag{border-left:4px solid var(--rev);background:var(--revbg);padding:11px 14px;margin:0 0 10px;border-radius:0 6px 6px 0;font-size:14px}
+.flag.law{border-color:var(--brand2);background:#ECF1F6}
+.flag.data{border-color:#8A949C;background:#EEF0EF}
+.flag b{display:block;margin-bottom:2px}
+.flag p{margin:0}
+.ok-t{color:var(--pass);font-weight:600}.bad-t{color:var(--fail);font-weight:600}.rev-t{color:var(--rev);font-weight:600}
+.empty{padding:28px;text-align:center;color:var(--muted);background:#fff;border:1px dashed var(--rule);border-radius:6px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:6px;font-size:14px;z-index:50;display:none;max-width:90vw}
+.loanrow{display:grid;grid-template-columns:1fr 200px 36px;gap:8px;margin-bottom:8px}
+.xbtn{border:1px solid var(--rule);background:#fff;border-radius:4px;cursor:pointer;color:var(--muted);font-size:16px}
+.print-only{display:none}
+.notes li{margin-bottom:6px}
+@media print{
+  body{background:#fff;font-size:11px}
+  .no-print,nav.steps,.top{display:none!important}
+  .tab{display:none!important}
+  #tab-result{display:block!important}
+  .print-only{display:block!important}
+  main{padding:0;max-width:none}
+  .verdict,.flag,tr{break-inside:avoid}
+  h3{break-after:avoid;font-size:15px;margin-top:18px}
+  table{font-size:10.5px}
+  .v-main{background:none}
+  @page{size:A4;margin:13mm}
+}
+@media (prefers-reduced-motion:no-preference){nav.steps button{transition:color .15s,border-color .15s}}
+</style>
+</head>
+<body>
+<header class="top no-print">
+  <div>
+    <div class="firm">BRS &amp; Associates, Chartered Accountants</div>
+    <h1>Tax audit applicability</h1>
+  </div>
+  <div class="caseBar">
+    <select id="caseSel" aria-label="Open saved case"></select>
+    <button class="btn" id="btnNew">New case</button>
+    <details class="menu"><summary>More</summary>
+      <div class="mlist">
+        <button id="btnExportJson">Export case file (.json)</button>
+        <button id="btnImportJson">Import case file</button>
+        <button id="btnCsv">Export classified transactions (.csv)</button>
+        <button id="btnPrint">Print / save report as PDF</button>
+        <button id="btnDel" class="danger">Delete this case</button>
+      </div>
+    </details>
+    <input type="file" id="importInp" accept=".json,application/json" hidden>
+  </div>
+</header>
+
+<nav class="steps no-print" aria-label="Steps">
+  <button data-tab="case" class="on"><b>1</b>Case details</button>
+  <button data-tab="files"><b>2</b>Cash &amp; bank files</button>
+  <button data-tab="txns"><b>3</b>Review transactions</button>
+  <button data-tab="result"><b>4</b>Result &amp; report</button>
+  <span id="liveChip" class="chip s-none">Enter turnover</span>
+</nav>
+
+<main>
+<!-- ============ CASE ============ -->
+<section id="tab-case" class="tab on">
+  <div class="cols">
+    <fieldset>
+      <legend>Assessee</legend>
+      <div class="grid">
+        <label class="f">Name of client<input data-k="client" autocomplete="off"></label>
+        <label class="f">PAN (optional)<input data-k="pan" autocomplete="off" maxlength="10" style="text-transform:uppercase"></label>
+        <label class="f">Financial year<select data-k="fy" id="fySel"></select><small class="w" id="actNote"></small></label>
+        <label class="f">Status<select data-k="entity" id="entSel"></select></label>
+        <label class="f">Residential status<select data-k="resident"><option value="1">Resident</option><option value="0">Non-resident</option></select></label>
+        <label class="f">Nature of activity<select data-k="nature">
+          <option value="business">Business</option>
+          <option value="spec_prof">Profession specified u/s 44AA(1)</option>
+          <option value="other_prof">Other profession</option></select></label>
+      </div>
+      <label class="f chk only-business" style="margin-top:14px"><input type="checkbox" data-k="excl44ad"> Business is outside s.44AD (goods carriage, commission, brokerage or agency business)</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Figures for the year</legend>
+      <div class="grid">
+        <label class="f"><span class="lbl-turn">Turnover / gross receipts</span><input class="amt" data-k="turnover" data-num inputmode="decimal"><small class="w" data-w="turnover"></small></label>
+        <label class="f">Profit declared (PGBP)<input class="amt" data-k="profit" data-num inputmode="decimal"><small class="w" data-w="profit" id="profitPct"></small></label>
+        <label class="f">Total income<input class="amt" data-k="totalIncome" data-num inputmode="decimal"><small class="w" data-w="totalIncome"></small></label>
+        <label class="f only-indhuf">Regime / age (for exemption limit)<select data-k="regime">
+          <option value="new">New regime</option><option value="old">Old regime, below 60</option>
+          <option value="old60">Old regime, 60–79</option><option value="old80">Old regime, 80+</option></select></label>
+        <label class="f">Basic exemption limit<input class="amt" data-k="bel" data-num inputmode="decimal"><small class="w"><a href="#" id="belReset">Reset to preset</a></small></label>
+        <label class="f only-business">Digital receipts within turnover (6% rate)<input class="amt" data-k="digital" data-num inputmode="decimal"><small class="w" id="digHint"></small></label>
+      </div>
+    </fieldset>
+  </div>
+
+  <fieldset class="only-business">
+    <legend>Presumptive history — preceding five years</legend>
+    <p class="hint">Drives the five-year bar u/s 44AD(4)–(5) [s.58(7)–(8) of the 2025 Act]. Leave "Not recorded" if unknown — the result will flag it.</p>
+    <div class="tw"><table><thead><tr><th>Financial year</th><th>Treatment of business income</th><th>Audit conducted u/s / remarks</th></tr></thead><tbody id="histBody"></tbody></table></div>
+  </fieldset>
+
+  <fieldset id="interpBox">
+    <legend>Contested positions</legend>
+    <p class="hint">Only points relevant to this case appear. Your choice drives the result and is printed in the report.</p>
+    <div class="grid">
+      <label class="f" data-show="sl2">2025 Act — profit below deemed rate, s.58 never opted
+        <select data-k="interp.sl2"><option value="conservative">Sl. 2 of s.63(1) Table is a standalone trigger — audit</option><option value="harmonious">Turnover thresholds in Sl. 1 govern — no audit</option></select></label>
+      <label class="f" data-show="p5075">Professional receipts ₹50–75 lakh declared u/s 44ADA
+        <select data-k="interp.p5075"><option value="prevalent">No audit if declared at ≥ 50% (prevalent practice)</option><option value="literal">Audit u/s 44AB(b) above ₹50 lakh (literal)</option></select></label>
+      <label class="f" data-show="anom">Turnover ₹2–3 crore declared u/s 44AD, cash payments above 5%
+        <select data-k="interp.anom"><option value="literal">Audit — first proviso to s.44AB is capped at ₹2 crore (literal)</option><option value="purposive">No audit — s.44AD declared within ₹3 crore (purposive)</option></select></label>
+    </div>
+    <p class="hint" data-show="none" style="margin:0">No contested position applies to the current inputs.</p>
+  </fieldset>
+
+  <fieldset>
+    <legend>Loan balances</legend>
+    <p class="hint">Optional. Carried to the report for the cash loan / deposit review.</p>
+    <div id="loans"></div>
+    <button class="btn ghost sm" id="addLoan">Add loan</button>
+  </fieldset>
+  <div class="row"><span class="spacer"></span><button class="btn" data-go="files">Next: cash &amp; bank files</button></div>
+</section>
+
+<!-- ============ FILES ============ -->
+<section id="tab-files" class="tab">
+  <p class="hint">Upload CSVs of the cash book and each bank account — Tally Cash/Bank Book exported to Excel and saved as CSV, or the bank's own statement CSV. Multiple files per side are fine. Contra entries are detected and excluded automatically; you can review every line in step 3.</p>
+  <div class="cols">
+    <fieldset>
+      <legend>Cash book</legend>
+      <div class="drop" data-kind="cash" tabindex="0" role="button"><strong>Drop cash book CSV here</strong>or click to choose</div>
+      <div id="files-cash"></div>
+    </fieldset>
+    <fieldset>
+      <legend>Bank books / statements</legend>
+      <div class="drop" data-kind="bank" tabindex="0" role="button"><strong>Drop bank CSV files here</strong>or click to choose</div>
+      <div id="files-bank"></div>
+    </fieldset>
+  </div>
+  <input type="file" id="fileInp" accept=".csv,.txt,text/csv" multiple hidden>
+
+  <fieldset>
+    <legend>Totals entered manually</legend>
+    <label class="f chk"><input type="checkbox" data-k="manual.on" id="manOn"> Use these totals instead of uploaded files</label>
+    <p class="hint" style="margin-top:8px">Used automatically when no file is uploaded. Enter aggregate receipts and payments excluding contra entries.</p>
+    <div class="grid">
+      <label class="f">Cash receipts<input class="amt" data-k="manual.cashR" data-num inputmode="decimal"></label>
+      <label class="f">Bank / other receipts<input class="amt" data-k="manual.bankR" data-num inputmode="decimal"></label>
+      <label class="f">Cash payments<input class="amt" data-k="manual.cashP" data-num inputmode="decimal"></label>
+      <label class="f">Bank / other payments<input class="amt" data-k="manual.bankP" data-num inputmode="decimal"></label>
+    </div>
+  </fieldset>
+  <div class="row"><button class="btn ghost" data-go="case">Back</button><span class="spacer"></span><button class="btn" data-go="txns">Next: review transactions</button></div>
+</section>
+
+<!-- ============ TXNS ============ -->
+<section id="tab-txns" class="tab">
+  <dl class="strip" id="strip"></dl>
+  <div id="txnArea"></div>
+</section>
+
+<!-- ============ RESULT ============ -->
+<section id="tab-result" class="tab">
+  <div class="print-only" id="printHead"></div>
+  <div id="resultArea"></div>
+</section>
+</main>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+'use strict';
+/* ---------- helpers ---------- */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const NF=new Intl.NumberFormat('en-IN',{maximumFractionDigits:0});
+const NF2=new Intl.NumberFormat('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+const rs=n=>(n==null||!isFinite(n))?'–':'₹ '+NF.format(Math.round(n));
+const r2=n=>n?NF2.format(n):'';
+const pct=x=>(x==null||!isFinite(x))?'–':(x*100).toFixed(2)+'%';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const trimN=x=>x.toFixed(2).replace(/\.?0+$/,'');
+function inWords(n){n=+n||0;const a=Math.abs(n);if(!a)return'';if(a>=1e7)return trimN(n/1e7)+' crore';if(a>=1e5)return trimN(n/1e5)+' lakh';if(a>=1e3)return trimN(n/1e3)+' thousand';return NF.format(n)}
+const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-5);
+const FYS=[];for(let y=2016;y<=2027;y++)FYS.push(y+'-'+String(y+1).slice(2));
+const ENT={ind:'Individual',huf:'HUF',firm:'Partnership firm (other than LLP)',llp:'LLP',co:'Company',oth:'Other (AOP / BOI / trust etc.)'};
+const fyY=fy=>+String(fy).slice(0,4);
+const fyRange=fy=>{const y=fyY(fy);return{s:y+'-04-01',e:(y+1)+'-03-31'}};
+const prevFY=(fy,k)=>{const y=fyY(fy)-k;return y+'-'+String(y+1).slice(2)};
+const TH=fy=>{const y=fyY(fy);return{y,newAct:y>=2026,enh:y>=2020?1e8:(y===2019?5e7:null),adEnh:y>=2023,adaEnh:y>=2023}};
+function belPreset(c){if(!['ind','huf'].includes(c.entity))return 0;const y=fyY(c.fy);
+  switch(c.regime){case'old':return 250000;case'old60':return c.entity==='ind'?300000:250000;case'old80':return c.entity==='ind'?500000:250000;
+  default:return y>=2025?400000:(y>=2023?300000:250000)}}
+function getPath(o,p){return p.split('.').reduce((a,k)=>a==null?a:a[k],o)}
+function setPath(o,p,v){const ks=p.split('.');let a=o;ks.slice(0,-1).forEach(k=>{if(a[k]==null)a[k]={};a=a[k]});a[ks.at(-1)]=v}
+function parseNum(v){if(v==null)return 0;if(typeof v==='number')return v;let s=String(v).trim();if(!s||s==='-')return 0;
+  const neg=/^\(.*\)$/.test(s)||/^-/.test(s)||/-$/.test(s);s=s.replace(/[^0-9.]/g,'');const p=s.split('.');if(p.length>2)s=p.slice(0,-1).join('')+'.'+p.at(-1);
+  const n=parseFloat(s);return isNaN(n)?0:(neg?-n:n)}
+const fmtIn=n=>{n=+n||0;return n?NF.format(n):''};
+const MON={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+const yy=s=>{let y=+s;if(String(s).length<=2)y+=2000;return y};
+function mkD(y,m,d){if(!(m>=1&&m<=12&&d>=1&&d<=31&&y>1990&&y<2100))return null;return y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0')}
+function parseDate(s){if(s==null)return null;s=String(s).trim();if(!s)return null;let m;
+  if(/^\d{5}(\.\d+)?$/.test(s)){const n=+s;if(n>30000&&n<80000){const d=new Date(Date.UTC(1899,11,30)+Math.floor(n)*864e5);return mkD(d.getUTCFullYear(),d.getUTCMonth()+1,d.getUTCDate())}}
+  if(m=s.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/))return mkD(+m[1],+m[2],+m[3]);
+  if(m=s.match(/^(\d{1,2})[-\/. ](\d{1,2})[-\/. ](\d{2,4})\b/))return mkD(yy(m[3]),+m[2],+m[1]);
+  if(m=s.match(/^(\d{1,2})[-\/. ]?([A-Za-z]{3,9})[-\/.,' ]*(\d{2,4})\b/)){const mo=MON[m[2].slice(0,3).toLowerCase()];if(mo)return mkD(yy(m[3]),mo,+m[1])}
+  return null}
+const dOut=d=>d?d.slice(8)+'-'+d.slice(5,7)+'-'+d.slice(0,4):'';
+const days=(a,b)=>Math.abs(Date.parse(a)-Date.parse(b))/864e5;
+const colL=i=>{let s='';i++;while(i>0){const r=(i-1)%26;s=String.fromCharCode(65+r)+s;i=Math.floor((i-1)/26)}return s};
+function toast(msg){const t=$('#toast');t.textContent=msg;t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display='none',3200)}
+
+/* ---------- CSV ---------- */
+function parseCSV(text){
+  text=text.replace(/^\uFEFF/,'');
+  const sample=text.slice(0,4000);const cnt=d=>sample.split(d).length;
+  const delim=[',',';','\t','|'].sort((a,b)=>cnt(b)-cnt(a))[0];
+  const rows=[];let row=[],f='',q=false;
+  for(let i=0;i<text.length;i++){const ch=text[i];
+    if(q){if(ch==='"'){if(text[i+1]==='"'){f+='"';i++}else q=false}else f+=ch}
+    else if(ch==='"')q=true;
+    else if(ch===delim){row.push(f);f=''}
+    else if(ch==='\n'||ch==='\r'){if(ch==='\r'&&text[i+1]==='\n')i++;row.push(f);rows.push(row);row=[];f=''}
+    else f+=ch}
+  if(f!==''||row.length){row.push(f);rows.push(row)}
+  return rows}
+const normH=s=>String(s||'').toLowerCase().replace(/[₹().:_*]/g,' ').replace(/\s+/g,' ').trim();
+const HKEY=/^(date|txn date|transaction date|tran date|value date|vch date|posting date|particulars|narration|description|remarks|details|debit|credit|dr|cr|withdrawal|withdrawals|withdrawal amt|deposit|deposits|deposit amt|vch type|voucher type|vch no|voucher no|chq|cheque|ref|balance|closing balance|amount|receipts?|payments?|type|debit amount|credit amount)\b/;
+function detectHeader(raw){let best=-1,bs=1;for(let i=0;i<Math.min(raw.length,60);i++){const sc=raw[i].filter(c=>HKEY.test(normH(c))).length;if(sc>bs){bs=sc;best=i}}return best}
+function autoMap(header){const h=header.map(normH);
+  const find=(re,ex)=>h.findIndex(x=>re.test(x)&&!(ex&&ex.test(x)));
+  let date=find(/^(txn |transaction |tran |posting |vch |voucher )?date$/);if(date<0)date=find(/date/,/value/);if(date<0)date=find(/date/);
+  const narr=find(/particular|narration|description|remark|detail/);
+  const vt=find(/vch type|voucher type|^type$/);
+  const dr=find(/withdraw|^debit|^dr\b|^payments?\b|paid out/);
+  const cr=find(/deposit|^credit|^cr\b|^receipts?\b|paid in/);
+  const amt=find(/^amount|^amt|transaction amount/);
+  const dc=find(/^(dr ?\/ ?cr|cr ?\/ ?dr|d ?\/ ?c|dr cr|cr dr)$/);
+  const mode=(dr<0||cr<0)&&amt>=0?'amt':'drcr';
+  return{mode,date,narr,vt,dr,cr,amt,dc}}
+function guessConv(header,kind,map){const j=header.map(normH).join('|');if(/withdraw|deposit/.test(j))return'stmt';if(kind==='cash')return'book';return map.vt>=0?'book':'stmt'}
+function buildRows(file){const{raw,hdr,map,conv}=file;const rows=[];
+  for(let i=hdr+1;i<raw.length;i++){const r=raw[i];if(!r||r.every(c=>!String(c).trim()))continue;
+    const ds=map.date>=0?(r[map.date]??''):'';const d=parseDate(ds);
+    const narr=map.narr>=0?String(r[map.narr]??'').replace(/\s+/g,' ').trim():'';
+    const vt=map.vt>=0?String(r[map.vt]??'').trim():'';
+    let dr=0,cr=0;
+    if(map.mode==='amt'){const a=parseNum(r[map.amt]);const side=map.dc>=0?String(r[map.dc]??'').trim().toLowerCase():'';
+      if(side.startsWith('c'))cr=Math.abs(a);else if(side.startsWith('d'))dr=Math.abs(a);else if(a<0)cr=-a;else dr=a}
+    else{dr=map.dr>=0?Math.abs(parseNum(r[map.dr])):0;cr=map.cr>=0?Math.abs(parseNum(r[map.cr])):0}
+    if(!d&&!dr&&!cr){if(narr&&rows.length)rows.at(-1).narr+=' '+narr;continue}
+    if(!dr&&!cr)continue;
+    rows.push({id:file.id+':'+i,f:file.id,d,ds:String(ds).trim(),narr,vt,rec:conv==='book'?dr:cr,pay:conv==='book'?cr:dr})}
+  return rows}
+
+/* ---------- storage ---------- */
+const DB={db:null,ok:true,mem:{},
+  open(){return new Promise(res=>{try{const r=indexedDB.open('brs-audit-applicability',1);
+    r.onupgradeneeded=()=>r.result.createObjectStore('cases',{keyPath:'id'});
+    r.onsuccess=()=>{this.db=r.result;res()};r.onerror=()=>{this.ok=false;res()}}catch(e){this.ok=false;res()}})},
+  st(m){return this.db.transaction('cases',m).objectStore('cases')},
+  all(){if(!this.ok)return Promise.resolve(Object.values(this.mem));return new Promise(res=>{const q=this.st('readonly').getAll();q.onsuccess=()=>res(q.result||[]);q.onerror=()=>res([])})},
+  get(id){if(!this.ok)return Promise.resolve(this.mem[id]);return new Promise(res=>{const q=this.st('readonly').get(id);q.onsuccess=()=>res(q.result);q.onerror=()=>res(null)})},
+  put(c){if(!this.ok){this.mem[c.id]=JSON.parse(JSON.stringify(c));return Promise.resolve()}return new Promise(res=>{try{const q=this.st('readwrite').put(c);q.onsuccess=()=>res();q.onerror=()=>{toast('Could not save — storage full?');res()}}catch(e){res()}})},
+  del(id){if(!this.ok){delete this.mem[id];return Promise.resolve()}return new Promise(res=>{const q=this.st('readwrite').delete(id);q.onsuccess=q.onerror=()=>res()})}};
+
+function blankCase(){const c={id:uid(),client:'',pan:'',fy:'2025-26',entity:'ind',resident:true,nature:'business',excl44ad:false,regime:'new',
+  turnover:0,profit:0,totalIncome:0,bel:0,belManual:false,digital:0,hist:Array.from({length:5},()=>({status:'',remarks:''})),
+  interp:{sl2:'conservative',p5075:'prevalent',anom:'literal'},manual:{on:false,cashR:0,bankR:0,cashP:0,bankP:0},loans:[],files:[],ov:{},updated:Date.now()};
+  c.bel=belPreset(c);return c}
+
+let C=null,D=null,tab='case',saveT=null;
+function saveSoon(){clearTimeout(saveT);saveT=setTimeout(async()=>{C.updated=Date.now();await DB.put(C);refreshCaseList()},350)}
+
+/* ---------- classification ---------- */
+const BAL=/opening bal|closing bal|^total\b|grand total|carried (over|forward)|brought forward|\bb\s*\/\s*f\b|\bc\s*\/\s*f\b|balance b\/d|balance c\/d|^balance$/i;
+const CASH_CONTRA=/\b(bank|a\/c no|deposited|withdrawn|atm|cdm)\b/i;
+const XFER=/\b(trf|transfer|tfr|sweep|own)\b/i;
+const BANK_CONTRA=/\b(cash dep\w*|cash wdl|cash withdraw\w*|by cash|to cash|atm\b|cdm\b|self\b|cash\b|own a\/?c)/i;
+function classify(c){
+  const res={},{s,e}=fyRange(c.fy),kindOf={};c.files.forEach(f=>kindOf[f.id]=f.kind);
+  const live=[];
+  for(const f of c.files)for(const r of f.rows){
+    if(!r.d||BAL.test(r.narr)){res[r.id]={a:'excl',why:!r.d?'No date — total or balance line':'Opening / closing balance or total'};continue}
+    if(r.d<s||r.d>e){res[r.id]={a:'excl',why:'Outside FY '+c.fy};continue}
+    if(/contra/i.test(r.vt))res[r.id]={a:'contra',why:'Contra voucher'};
+    live.push(r)}
+  const key=a=>Math.round(a*100);
+  const idx=(rows,fld)=>{const m=new Map();rows.forEach(r=>{if(r[fld]>0){const k=key(r[fld]);if(!m.has(k))m.set(k,[]);m.get(k).push(r)}});return m};
+  const hint=r=>/contra/i.test(r.vt)||(kindOf[r.f]==='cash'?CASH_CONTRA.test(r.narr):(BANK_CONTRA.test(r.narr)||XFER.test(r.narr)));
+  const cashL=live.filter(r=>kindOf[r.f]==='cash'),bankL=live.filter(r=>kindOf[r.f]==='bank');
+  const used=new Set();
+  const lbl=r=>kindOf[r.f]==='cash'?'cash book':'bank';
+  // src side uses the opposite field of the pool: pool 'pay' -> src receipts
+  const match=(src,fld,pool,tol,cross)=>{for(const r of src){const amt=fld==='pay'?r.rec:r.pay;if(used.has(r.id)||!(amt>0))continue;
+      const list=pool.get(key(amt))||[];
+      const hit=list.find(x=>!used.has(x.id)&&x.id!==r.id&&(!cross||x.f!==r.f)&&days(x.d,r.d)<=tol&&(hint(x)||hint(r)));
+      if(hit){used.add(r.id);used.add(hit.id);
+        const pre=(z)=>/contra/i.test(z.vt)?'Contra voucher — m':'M';
+        res[r.id]={a:'contra',why:`${pre(r)}atched with ${lbl(hit)} entry of ${dOut(hit.d)}`};
+        res[hit.id]={a:'contra',why:`${pre(hit)}atched with ${lbl(r)} entry of ${dOut(r.d)}`}}}};
+  match(cashL,'pay',idx(bankL,'pay'),2,false);  // cash receipt  <-> bank withdrawal
+  match(cashL,'rec',idx(bankL,'rec'),2,false);  // cash payment  <-> bank deposit
+  match(bankL,'rec',idx(bankL,'rec'),1,true);   // bank payment  <-> receipt in another bank account
+  for(const r of live){if(res[r.id])continue;
+    const k=kindOf[r.f];
+    if(k==='cash'&&CASH_CONTRA.test(r.narr))res[r.id]={a:'contra',why:'Narration suggests bank deposit / withdrawal'};
+    else if(k==='bank'&&BANK_CONTRA.test(r.narr))res[r.id]={a:'contra',why:'Narration suggests cash or self transfer'};
+    else res[r.id]={a:'inc',why:''}}
+  return res}
+const stOf=id=>(C.ov[id])||(D&&D.cls[id]?D.cls[id].a:'inc');
+
+function totals(c,cls){
+  const useManual=c.manual.on||!c.files.length;
+  const kindOf={};c.files.forEach(f=>kindOf[f.id]=f.kind);
+  const t={useManual,cashR:0,bankR:0,cashP:0,bankP:0,months:{},cashRows:[],counts:{inc:0,contra:0,cash:0,excl:0}};
+  if(useManual){const m=c.manual;Object.assign(t,{cashR:+m.cashR||0,bankR:+m.bankR||0,cashP:+m.cashP||0,bankP:+m.bankP||0})}
+  for(const f of c.files)for(const r of f.rows){
+    const st=c.ov[r.id]||cls[r.id].a;t.counts[st]=(t.counts[st]||0)+1;
+    if(st==='contra'||st==='excl')continue;
+    const isCash=f.kind==='cash'||st==='cash';
+    if(!useManual){if(isCash){t.cashR+=r.rec;t.cashP+=r.pay}else{t.bankR+=r.rec;t.bankP+=r.pay}}
+    const mk=r.d.slice(0,7);const M=t.months[mk]||(t.months[mk]={cr:0,br:0,cp:0,bp:0});
+    if(isCash){M.cr+=r.rec;M.cp+=r.pay;t.cashRows.push(r)}else{M.br+=r.rec;M.bp+=r.pay}}
+  t.totR=t.cashR+t.bankR;t.totP=t.cashP+t.bankP;
+  t.cr=t.totR>0?t.cashR/t.totR:null;t.cp=t.totP>0?t.cashP/t.totP:null;
+  return t}
+
+/* ---------- 44AD history ---------- */
+function histInfo(c){const chron=(c.hist||[]).slice(0,5).map((h,i)=>({fy:prevFY(c.fy,i+1),s:(h&&h.status)||''})).reverse();
+  const pres=chron.filter(x=>x.s==='pres');let block=false,blockFY=null;
+  chron.forEach((x,j)=>{if(x.s==='books'&&chron.slice(0,j).some(y=>y.s==='pres')){block=true;blockFY=x.fy}});
+  return{optedPrev:pres.length>0,lastPres:pres.length?pres.at(-1).fy:null,block,blockFY,unknown:chron.some(x=>!x.s)}}
+
+/* ---------- decision engine ---------- */
+function evaluate(c,t){
+  const th=TH(c.fy),NA=th.newAct;
+  const R={a:NA?'s.63(1) Table Sl. 1(a)–(b), IT Act 2025':'s.44AB(a) and its proviso',
+    b:NA?'s.63(1) Table Sl. 1(c), IT Act 2025':'s.44AB(b)',
+    d:NA?'s.63(1) Table Sl. 2 r/w s.58, IT Act 2025':'s.44AB(d) r/w s.44ADA',
+    e:NA?'s.58(7)–(8) r/w s.63, IT Act 2025':'s.44AB(e) r/w s.44AD(4)–(5)',
+    sl2:'s.63(1) Table Sl. 2 r/w s.58(3), IT Act 2025',
+    ad:NA?'s.58 (erstwhile s.44AD)':'s.44AD',ada:NA?'s.58 (erstwhile s.44ADA)':'s.44ADA',
+    ex:NA?'s.63(2), IT Act 2025':'first proviso to s.44AB'};
+  const T=+c.turnover||0,P=+c.profit||0,TI=+c.totalIncome||0,BEL=+c.bel||0;
+  const trace=[],flags=[],grid={},calc={};
+  const base={th,R,T,P,TI,BEL,trace,flags,grid,calc};
+  const out=(status,head,basis,why)=>Object.assign(base,{status,head,basis,why});
+  if(!T)return out('none','Enter turnover / gross receipts','','The test starts from turnover or gross receipts on the Case details step.');
+  const cr=t.cr,cp=t.cp,rOK=cr!=null&&cr<=0.05,pOK=cp!=null&&cp<=0.05,above=TI>BEL;
+  if(cr==null||cp==null)flags.push({k:'data',t:'Cash and bank data missing',x:'No receipts or payments were loaded, so the 5% cash conditions are treated as not met. Upload files in step 2 or enter totals manually.'});
+  if(NA)flags.push({k:'law',t:'Income-tax Act, 2025 applies',x:'Tax year starting 1 April 2026 or later: s.63 replaces s.44AB and s.58 replaces ss.44AD/44ADA/44AE. Clause references are taken from published commentary — verify against the bare Act before signing.'});
+  trace.push({m:'i',t:'Profit declared as % of turnover',ref:'',v:pct(P/T)});
+
+  if(c.nature==='business'){
+    grid.b='Not applicable';grid.ada='Not applicable';
+    let aTrig,aWhy;
+    if(T<=1e7){aTrig=false;aWhy='Turnover does not exceed ₹1 crore'}
+    else if(th.enh&&T<=th.enh&&rOK&&pOK){aTrig=false;aWhy=`Turnover within ₹${inWords(th.enh)} and cash receipts and payments are each within 5%`}
+    else{aTrig=true;aWhy=!th.enh?'Turnover exceeds ₹1 crore (the cash-based enhanced limit applies only from FY 2019-20)':
+      T>th.enh?`Turnover exceeds ₹${inWords(th.enh)}`:`Turnover exceeds ₹1 crore and ${!rOK&&!pOK?'cash receipts and cash payments both exceed':!rOK?'cash receipts exceed':'cash payments exceed'} 5%`}
+    trace.push({m:T>1e7?'x':'ok',t:'Turnover exceeds ₹1 crore',ref:R.a,v:`${rs(T)} (${inWords(T)})`});
+    if(T>1e7){
+      if(th.enh){trace.push({m:rOK?'ok':'x',t:'Cash receipts within 5% of aggregate receipts',ref:R.a,v:pct(cr)});
+        trace.push({m:pOK?'ok':'x',t:'Cash payments within 5% of aggregate payments',ref:R.a,v:pct(cp)});
+        trace.push({m:T<=th.enh?'ok':'x',t:`Turnover within enhanced limit of ₹${inWords(th.enh)}`,ref:R.a,v:rs(T)})}
+      else trace.push({m:'na',t:'Enhanced ₹5 / 10 crore limit',ref:R.a,v:'Not available before FY 2019-20'})}
+    const entOK=['ind','huf','firm'].includes(c.entity)&&c.resident&&!c.excl44ad;
+    const adLimit=(th.adEnh&&rOK)?3e7:2e7, within=T<=adLimit;
+    const h=histInfo(c);
+    const Dg=Math.min(Math.max(+c.digital||0,0),T),deemed=Dg*0.06+(T-Dg)*0.08,meets=P>=deemed-0.5;
+    Object.assign(calc,{kind:'ad',Dg,ND:T-Dg,d6:Dg*0.06,d8:(T-Dg)*0.08,deemed,adLimit});
+    const adElig=entOK&&within&&!h.block;
+    trace.push({m:entOK?'i':'na',t:`Eligible for ${R.ad}`,ref:R.ad,v:entOK?'Resident individual / HUF / firm':(!c.resident?'Non-resident':c.excl44ad?'Excluded business':ENT[c.entity]+' — not eligible')});
+    if(entOK)trace.push({m:within?'i':'na',t:`Turnover within ₹${inWords(adLimit)} limit${th.adEnh?(rOK?' (cash receipts ≤ 5%)':' (cash receipts > 5%, so ₹2 crore)'):''}`,ref:R.ad,v:within?'Yes':'No'});
+    if(entOK&&within)trace.push({m:h.block?'x':'ok',t:'Five-year bar after opting out',ref:R.e,v:h.block?`Opted out in FY ${h.blockFY}`:'Not attracted'});
+    if(entOK&&within)trace.push({m:meets?'ok':'x',t:'Profit declared at or above deemed profit',ref:R.ad,v:`${rs(P)} vs ${rs(deemed)}`});
+    const lockNow=!h.block&&h.optedPrev&&entOK&&within&&!meets;
+    if(entOK&&within&&!meets&&h.unknown)flags.push({k:'data',t:'Presumptive history incomplete',x:'Profit is below the deemed rate and some of the preceding five years are not recorded. The five-year bar can change the answer — fill the history table.'});
+    // grid
+    grid.ad=!entOK?'Not eligible':!within?`Not eligible — turnover above ₹${inWords(adLimit)}`:h.block?'Barred — five-year lock-in':meets?'Eligible — deemed profit declared':'Eligible — lower profit declared';
+    let res;
+    if(adElig&&meets){
+      if(aTrig&&!NA&&T>2e7){
+        const lit=c.interp.anom!=='purposive';
+        flags.push({k:'interp',t:'₹2–3 crore anomaly under the 1961 Act',x:'Law: the first proviso to s.44AB exempts s.44AD declarants only where turnover does not exceed ₹2 crore; it was not aligned when the s.44AD limit rose to ₹3 crore (Finance Act 2023). With cash payments above 5%, the s.44AB(a) proviso also fails. Literal view: audit required. Purposive view: a valid s.44AD declaration within ₹3 crore should not need audit. No binding authority located — document the position taken.'});
+        res=lit?out('review','Tax audit required — contested',R.a,'Declared u/s 44AD with turnover between ₹2 and ₹3 crore, but cash payments exceed 5% (literal reading)')
+               :out('review','Tax audit not required — contested',R.ad,'Declared u/s 44AD within the ₹3 crore limit (purposive reading)');
+      }else res=out('not','Tax audit not required',R.ex,`Profit declared at or above deemed profit u/s ${NA?'58':'44AD'}, turnover within ₹${inWords(adLimit)}`);
+    }else if(aTrig)res=out('req','Tax audit required',R.a,aWhy);
+    else if(h.block||lockNow){
+      const why=h.block?`The five-year bar applies — s.44AD was opted and then dropped in FY ${h.blockFY}`:`s.44AD was opted in FY ${h.lastPres}; declaring below the deemed rate now attracts the five-year bar`;
+      trace.push({m:above?'x':'ok',t:'Total income exceeds basic exemption limit',ref:R.e,v:`${rs(TI)} vs ${rs(BEL)}`});
+      res=above?out('req','Tax audit required',R.e,why+', and total income exceeds the basic exemption limit')
+               :out('not','Tax audit not required',R.e,why+', but total income is within the basic exemption limit');
+    }else if(entOK&&within&&!meets){
+      trace.push({m:above?'x':'ok',t:'Total income exceeds basic exemption limit',ref:NA?R.sl2:R.e,v:`${rs(TI)} vs ${rs(BEL)}`});
+      if(!above)res=out('not','Tax audit not required',NA?R.sl2:R.e,'Profit below the deemed rate, but total income is within the basic exemption limit');
+      else if(NA){const cons=c.interp.sl2!=='harmonious';
+        flags.push({k:'interp',t:'Lower profit without opting for s.58 (2025 Act)',x:'Law: s.63(1) Table Sl. 2 requires audit where a person carrying on a business referred to in s.58(2) claims profits lower than the deemed profits; s.58(3) speaks of books and audit where total income exceeds the exemption limit. View 1 (literal): a standalone trigger even if s.58 was never opted — a change from s.44AB(e) of the 1961 Act, which needed the s.44AD(4) bar. View 2 (harmonious): Sl. 2 operates subject to the turnover thresholds in Sl. 1. Commentary is divided; no CBDT clarification or ruling was located when this tool was built.'});
+        res=cons?out('review','Tax audit required — contested',R.sl2,'Business within s.58 limits, profit below 6% / 8%, total income above the exemption limit (literal reading of Sl. 2)')
+                :out('review','Tax audit not required — contested',R.a,'Turnover within the Sl. 1 thresholds governs (harmonious reading)');
+      }else{
+        flags.push({k:'law',t:'Lower profit without a prior s.44AD option',x:'Law: no clause of s.44AB is triggered. Clause (e) applies only where s.44AD(4) is attracted — i.e. s.44AD was opted in one of the preceding five years. This depends entirely on the history table being correct.'});
+        res=out('not','Tax audit not required','s.44AB(a) not triggered; clause (e) not attracted','Turnover within the s.44AB(a) limit and s.44AD not opted in the preceding five years, so lower profit does not attract clause (e)');
+      }
+    }else res=out('not','Tax audit not required',R.a,aWhy+(entOK?'':`; ${R.ad} is not available to this assessee`));
+    grid.a=aTrig?(/not required/.test(res.head)?'Exempt — presumptive declared':'Audit required'):'Not triggered';
+    grid.e=(h.block||lockNow)?(above?'Audit required':'Attracted, income within limit'):'Not attracted';
+    return res;
+  }
+
+  // profession
+  grid.a='Not applicable';grid.ad='Not applicable';grid.e='Not applicable';
+  const spec=c.nature==='spec_prof';
+  const entOK=['ind','firm'].includes(c.entity)&&c.resident&&spec;
+  const lim=(th.adaEnh&&rOK)?7.5e6:5e6,deemed=0.5*T,meets=P>=deemed-0.5;
+  Object.assign(calc,{kind:'ada',deemed,lim});
+  trace.push({m:T>5e6?'x':'ok',t:'Gross receipts exceed ₹50 lakh',ref:R.b,v:`${rs(T)} (${inWords(T)})`});
+  trace.push({m:entOK?'i':'na',t:`Eligible for ${R.ada}`,ref:R.ada,v:entOK?'Resident individual / firm, specified profession':(!spec?'Not a profession specified u/s 44AA(1)':!c.resident?'Non-resident':ENT[c.entity]+' — not eligible')});
+  if(entOK){if(th.adaEnh)trace.push({m:rOK?'ok':'na',t:'Cash receipts within 5% (₹75 lakh limit)',ref:R.ada,v:pct(cr)});
+    trace.push({m:T<=lim?'ok':'x',t:`Gross receipts within ₹${inWords(lim)}`,ref:R.ada,v:T<=lim?'Yes':'No'});
+    trace.push({m:meets?'ok':'x',t:'Profit declared at or above 50% of receipts',ref:R.ada,v:`${rs(P)} vs ${rs(deemed)}`})}
+  grid.ada=!entOK?'Not eligible':T>lim?`Not eligible — receipts above ₹${inWords(lim)}`:meets?'Eligible — 50% declared':'Eligible — lower profit declared';
+  let res;
+  if(entOK&&T<=lim){
+    if(meets){
+      if(T>5e6){
+        if(NA){flags.push({k:'law',t:'Receipts ₹50–75 lakh under s.58',x:'Commentary reports that s.63(2) excludes persons declaring profits per s.58 from audit. Verify the wording of s.63(2) against the bare Act.'});
+          res=out('not','Tax audit not required',R.ex,'Profit declared at ≥ 50% with receipts within ₹75 lakh and cash receipts within 5%')}
+        else{const prev=c.interp.p5075!=='literal';
+          flags.push({k:'interp',t:'Professional receipts ₹50–75 lakh (1961 Act)',x:'Law: s.44AB(b) applies when gross receipts exceed ₹50 lakh, and the first proviso to s.44AB covers only s.44AD declarants, not s.44ADA. Interpretation: prevalent practice treats a s.44ADA declaration at ≥ 50% (receipts ≤ ₹75 lakh, cash ≤ 5%) as outside audit — otherwise the Finance Act 2023 enhancement has no effect. The literal view requires audit. No binding authority located.'});
+          res=prev?out('review','Tax audit not required — contested',R.ada,'Declared u/s 44ADA at ≥ 50% within the ₹75 lakh limit (prevalent practice)')
+                  :out('review','Tax audit required — contested',R.b,'Gross receipts exceed ₹50 lakh (literal reading of s.44AB(b))')}
+      }else res=out('not','Tax audit not required',R.ada,'Gross receipts within ₹50 lakh and profit declared at ≥ 50%');
+    }else{
+      trace.push({m:above?'x':'ok',t:'Total income exceeds basic exemption limit',ref:R.d,v:`${rs(TI)} vs ${rs(BEL)}`});
+      if(T>5e6)res=out('req','Tax audit required',R.b,'Gross receipts exceed ₹50 lakh and profit is declared below 50%'+(above?` (also ${R.d})`:''));
+      else if(above)res=out('req','Tax audit required',R.d,'Profit declared below 50% of gross receipts and total income exceeds the basic exemption limit');
+      else res=out('not','Tax audit not required',R.d,'Profit below 50%, but total income is within the basic exemption limit');
+    }
+  }else{
+    if(T>5e6)res=out('req','Tax audit required',R.b,'Gross receipts exceed ₹50 lakh'+(entOK?` and the ₹${inWords(lim)} limit for presumptive taxation`:''));
+    else res=out('not','Tax audit not required',R.b,'Gross receipts within ₹50 lakh'+(entOK?'':`; ${R.ada} is not available, so lower profit is not a trigger`));
+  }
+  grid.b=T>5e6?(/not required/.test(res.head)?'Exempt — presumptive declared':'Audit required'):'Not triggered';
+  return res;
+}
+
+function derive(){const cls=classify(C);D={cls};const t=totals(C,cls);D.tot=t;D.ev=evaluate(C,t);return D}
+
+/* ---------- UI: tabs ---------- */
+function show(t){tab=t;$$('nav.steps button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));$$('.tab').forEach(s=>s.classList.toggle('on',s.id==='tab-'+t));
+  if(t==='files')renderFiles();if(t==='txns')renderTxns();if(t==='result')renderResult();window.scrollTo({top:0})}
+$$('nav.steps button').forEach(b=>b.onclick=()=>show(b.dataset.tab));
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g){e.preventDefault();show(g.dataset.go)}});
+
+function updateChip(){const ev=D.ev,ch=$('#liveChip');ch.className='chip s-'+ev.status;ch.textContent=ev.status==='none'?'Enter turnover':ev.head+(ev.basis?' — '+ev.basis.replace(/, IT Act 2025/,''):'')}
+function afterChange(full){derive();updateChip();saveSoon();if(tab==='result')renderResult();if(tab==='txns'&&full)renderTxns();else if(tab==='txns')renderStrip()}
+
+/* ---------- UI: case ---------- */
+function initCaseUI(){
+  $('#fySel').innerHTML=FYS.map(f=>`<option value="${f}">FY ${f} (${fyY(f)>=2026?'Tax year':'AY '+(fyY(f)+1)+'-'+String(fyY(f)+2).slice(2)})</option>`).join('');
+  $('#entSel').innerHTML=Object.entries(ENT).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
+  $$('#tab-case [data-k], #tab-files [data-k]').forEach(el=>{
+    const k=el.dataset.k,isNum=el.hasAttribute('data-num');
+    const ev=(el.type==='checkbox'||el.tagName==='SELECT')?'change':'input';
+    el.addEventListener(ev,()=>{
+      let v=el.type==='checkbox'?el.checked:isNum?parseNum(el.value):el.value;
+      if(k==='resident')v=el.value==='1';
+      if(k==='pan')v=String(v).toUpperCase();
+      setPath(C,k,v);
+      if(k==='bel')C.belManual=true;
+      if(['fy','entity','regime'].includes(k)&&!C.belManual){C.bel=belPreset(C);$('[data-k="bel"]').value=fmtIn(C.bel)}
+      if(k==='fy')renderHist();
+      const full=['fy','manual.on'].includes(k)||k.startsWith('manual');
+      afterChange(full);updateVis();updateWords();
+      if(k==='client'||k==='fy')refreshCaseListSoon();
+    });
+    if(isNum)el.addEventListener('blur',()=>{el.value=fmtIn(getPath(C,k))});
+  });
+  $('#belReset').onclick=e=>{e.preventDefault();C.belManual=false;C.bel=belPreset(C);$('[data-k="bel"]').value=fmtIn(C.bel);afterChange();updateWords()};
+  $('#addLoan').onclick=()=>{C.loans.push({name:'',amt:0});renderLoans();saveSoon()};
+}
+function fillCase(){
+  $$('[data-k]').forEach(el=>{const k=el.dataset.k;const v=getPath(C,k);
+    if(el.type==='checkbox')el.checked=!!v;else if(k==='resident')el.value=v?'1':'0';else if(el.hasAttribute('data-num'))el.value=fmtIn(v);else el.value=v??''});
+  renderHist();renderLoans();updateVis();updateWords()}
+function updateVis(){const th=TH(C.fy),biz=C.nature==='business',prof=!biz;
+  $$('.only-business').forEach(e=>e.style.display=biz?'':'none');
+  $$('.only-indhuf').forEach(e=>e.style.display=['ind','huf'].includes(C.entity)?'':'none');
+  $('.lbl-turn').textContent=biz?'Turnover / gross receipts':'Gross receipts from profession';
+  const sh={sl2:th.newAct&&biz,p5075:!th.newAct&&C.nature==='spec_prof'&&th.adaEnh,anom:!th.newAct&&biz&&th.adEnh};
+  sh.none=!sh.sl2&&!sh.p5075&&!sh.anom;
+  $$('#interpBox [data-show]').forEach(e=>e.style.display=sh[e.dataset.show]?'':'none');
+  $('#actNote').textContent=th.newAct?'Income-tax Act, 2025 — s.63 / s.58':'Income-tax Act, 1961 — s.44AB / 44AD / 44ADA'}
+function updateWords(){$$('[data-w]').forEach(e=>{const k=e.dataset.w;e.textContent=inWords(getPath(C,k))});
+  const T=+C.turnover||0;if(T&&C.profit)$('#profitPct').textContent=inWords(C.profit)+' — '+pct(C.profit/T)+' of turnover';
+  const bR=D&&D.tot&&!D.tot.useManual?D.tot.bankR:0;
+  $('#digHint').innerHTML=bR?`Non-contra bank receipts: ${rs(bR)} <a href="#" id="useBank">use</a> (remove loans, capital, GST etc.)`:'Received by account payee cheque / draft / electronic mode by the return due date';
+  const u=$('#useBank');if(u)u.onclick=e=>{e.preventDefault();C.digital=Math.round(bR);$('[data-k="digital"]').value=fmtIn(C.digital);afterChange()}}
+function renderHist(){const opts=[['','Not recorded'],['pres','Declared u/s 44AD (presumptive)'],['books','Eligible, but declared below deemed rate / opted out'],['na','Not eligible / no business']];
+  $('#histBody').innerHTML=C.hist.map((h,i)=>`<tr><td>FY ${prevFY(C.fy,i+1)}</td><td><select data-h="${i}">${opts.map(([v,l])=>`<option value="${v}"${h.status===v?' selected':''}>${l}</option>`).join('')}</select></td><td><input data-hr="${i}" value="${esc(h.remarks)}" placeholder="e.g. 44AB(a) / not audited"></td></tr>`).join('');
+  $$('#histBody [data-h]').forEach(s=>s.onchange=()=>{C.hist[+s.dataset.h].status=s.value;afterChange()});
+  $$('#histBody [data-hr]').forEach(s=>s.oninput=()=>{C.hist[+s.dataset.hr].remarks=s.value;saveSoon()})}
+function renderLoans(){$('#loans').innerHTML=C.loans.length?C.loans.map((l,i)=>`<div class="loanrow"><input data-ln="${i}" value="${esc(l.name)}" placeholder="Lender / particulars"><input class="amt" data-la="${i}" value="${fmtIn(l.amt)}" placeholder="Amount" inputmode="decimal"><button class="xbtn" data-lx="${i}" aria-label="Remove">×</button></div>`).join(''):'<p class="hint">No loans added.</p>';
+  $$('[data-ln]').forEach(e=>e.oninput=()=>{C.loans[+e.dataset.ln].name=e.value;saveSoon()});
+  $$('[data-la]').forEach(e=>{e.oninput=()=>{C.loans[+e.dataset.la].amt=parseNum(e.value);saveSoon()};e.onblur=()=>e.value=fmtIn(C.loans[+e.dataset.la].amt)});
+  $$('[data-lx]').forEach(e=>e.onclick=()=>{C.loans.splice(+e.dataset.lx,1);renderLoans();saveSoon()})}
+
+/* ---------- UI: files ---------- */
+let pendingKind='cash';
+$$('.drop').forEach(z=>{
+  z.onclick=()=>{pendingKind=z.dataset.kind;$('#fileInp').click()};
+  z.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();z.click()}};
+  z.ondragover=e=>{e.preventDefault();z.classList.add('over')};
+  z.ondragleave=()=>z.classList.remove('over');
+  z.ondrop=e=>{e.preventDefault();z.classList.remove('over');addFiles([...e.dataTransfer.files],z.dataset.kind)}});
+$('#fileInp').onchange=e=>{const fl=[...e.target.files];e.target.value='';addFiles(fl,pendingKind)};
+async function addFiles(list,kind){
+  for(const f of list){
+    const head=new Uint8Array(await f.slice(0,4).arrayBuffer());
+    if(head[0]===0x50&&head[1]===0x4B){toast(`${f.name} is an Excel file — open it and "Save As" CSV, then upload.`);continue}
+    const raw=parseCSV(await f.text());
+    if(!raw.length){toast(f.name+' is empty');continue}
+    const hdr=detectHeader(raw);const header=hdr>=0?raw[hdr]:[];const map=autoMap(header);
+    const file={id:uid(),name:f.name,kind,raw,hdr,map,conv:guessConv(header,kind,map)};
+    file.rows=buildRows(file);C.files.push(file);
+    if(hdr<0)toast(`Header row not found in ${f.name} — set it and map columns below.`)}
+  C.manual.on=false;$('#manOn').checked=false;
+  afterChange(true);renderFiles();updateWords()}
+function colOpts(f,sel){const h=f.hdr>=0?f.raw[f.hdr]:(f.raw[0]||[]);const n=Math.max(...f.raw.slice(0,80).map(r=>r.length));
+  let o=`<option value="-1"${sel<0?' selected':''}>— none —</option>`;for(let i=0;i<n;i++)o+=`<option value="${i}"${sel===i?' selected':''}>${colL(i)}: ${esc(String((f.hdr>=0?h[i]:'')||'').slice(0,28))}</option>`;return o}
+function renderFiles(){
+  for(const kind of['cash','bank']){
+    const fs=C.files.filter(f=>f.kind===kind);
+    $('#files-'+kind).innerHTML=fs.map(f=>{
+      const m=f.map,rec=f.rows.reduce((a,r)=>a+r.rec,0),pay=f.rows.reduce((a,r)=>a+r.pay,0),nd=f.rows.filter(r=>!r.d).length;
+      const sel=(k,label)=>`<label class="f">${label}<select data-fm="${k}">${colOpts(f,m[k])}</select></label>`;
+      return `<div class="fcard" data-fid="${f.id}">
+        <div class="fhead"><b>${esc(f.name)}</b><span class="muted">${f.rows.length} entries read; raw receipts ${rs(rec)}, raw payments ${rs(pay)} (before exclusions)</span><span class="spacer"></span>
+          <select data-fk style="width:auto;padding:4px 6px;font-size:13px"><option value="cash"${f.kind==='cash'?' selected':''}>Cash</option><option value="bank"${f.kind==='bank'?' selected':''}>Bank</option></select>
+          <button class="btn ghost sm" data-fdel>Remove</button></div>
+        <div class="fmap">
+          <label class="f">Header row<input type="number" min="1" data-fh value="${f.hdr+1}"></label>
+          ${sel('date','Date')}${sel('narr','Particulars')}${sel('vt','Voucher type')}
+          <label class="f">Amount layout<select data-fmode><option value="drcr"${m.mode==='drcr'?' selected':''}>Separate debit / credit columns</option><option value="amt"${m.mode==='amt'?' selected':''}>Single amount + Dr/Cr</option></select></label>
+          ${m.mode==='drcr'?sel('dr','Debit / withdrawal')+sel('cr','Credit / deposit'):sel('amt','Amount')+sel('dc','Dr / Cr indicator')}
+          <label class="f">Money coming in is the<select data-fconv><option value="book"${f.conv==='book'?' selected':''}>Debit side (books / Tally)</option><option value="stmt"${f.conv==='stmt'?' selected':''}>Credit / deposit side (bank statement)</option></select></label>
+        </div>
+        ${nd?`<p class="warn">${nd} entr${nd>1?'ies':'y'} without a readable date — treated as totals and excluded. Check the Date column if this looks wrong.</p>`:''}
+        <div class="tw" style="border:0;border-radius:0"><table><thead><tr><th>Date</th><th>Particulars</th><th>Vch type</th><th class="n">Receipt</th><th class="n">Payment</th></tr></thead><tbody>
+          ${f.rows.slice(0,6).map(r=>`<tr><td>${r.d?dOut(r.d):`<span class="tag">${esc(r.ds)||'—'}</span>`}</td><td>${esc(r.narr.slice(0,70))}</td><td>${esc(r.vt)}</td><td class="n">${r2(r.rec)}</td><td class="n">${r2(r.pay)}</td></tr>`).join('')||'<tr><td colspan="5" class="muted">No entries read — check header row and column mapping.</td></tr>'}
+        </tbody></table></div></div>`}).join('');
+  }
+  $$('.fcard').forEach(card=>{const f=C.files.find(x=>x.id===card.dataset.fid);
+    const rebuild=()=>{f.rows=buildRows(f);Object.keys(C.ov).forEach(k=>{if(k.startsWith(f.id+':'))delete C.ov[k]});afterChange(true);renderFiles();updateWords()};
+    card.querySelector('[data-fdel]').onclick=()=>{if(!confirm('Remove '+f.name+'?'))return;C.files=C.files.filter(x=>x!==f);Object.keys(C.ov).forEach(k=>{if(k.startsWith(f.id+':'))delete C.ov[k]});afterChange(true);renderFiles();updateWords()};
+    card.querySelector('[data-fk]').onchange=e=>{f.kind=e.target.value;afterChange(true);renderFiles()};
+    card.querySelector('[data-fh]').onchange=e=>{f.hdr=Math.max(0,(+e.target.value||1)-1);const map=autoMap(f.raw[f.hdr]||[]);f.map=map;f.conv=guessConv(f.raw[f.hdr]||[],f.kind,map);rebuild()};
+    card.querySelectorAll('[data-fm]').forEach(s=>s.onchange=()=>{f.map[s.dataset.fm]=+s.value;rebuild()});
+    card.querySelector('[data-fmode]').onchange=e=>{f.map.mode=e.target.value;rebuild()};
+    card.querySelector('[data-fconv]').onchange=e=>{f.conv=e.target.value;rebuild()};
+  })}
+
+/* ---------- UI: transactions ---------- */
+const STL={inc:'Include',contra:'Contra / own transfer',cash:'Deemed cash',excl:'Exclude'};
+const TF={file:'',st:'',q:'',page:0};
+function renderStrip(){const t=D.tot;
+  $('#strip').innerHTML=`<div><dt>Cash receipts</dt><dd>${rs(t.cashR)}</dd></div><div><dt>Total receipts</dt><dd>${rs(t.totR)}</dd></div>
+   <div><dt>Cash share of receipts</dt><dd class="${t.cr==null?'':t.cr<=0.05?'good':'bad'}">${pct(t.cr)}</dd></div>
+   <div><dt>Cash payments</dt><dd>${rs(t.cashP)}</dd></div><div><dt>Total payments</dt><dd>${rs(t.totP)}</dd></div>
+   <div><dt>Cash share of payments</dt><dd class="${t.cp==null?'':t.cp<=0.05?'good':'bad'}">${pct(t.cp)}</dd></div>`}
+function filteredRows(){const kf={};C.files.forEach(f=>kf[f.id]=f);const q=TF.q.toLowerCase();const out=[];
+  for(const f of C.files){if(TF.file&&f.id!==TF.file)continue;for(const r of f.rows){const st=stOf(r.id);
+    if(TF.st==='ov'){if(!C.ov[r.id])continue}else if(TF.st&&st!==TF.st)continue;
+    if(q&&!(r.narr.toLowerCase().includes(q)||String(r.rec).includes(q)||String(r.pay).includes(q)||(r.vt||'').toLowerCase().includes(q)))continue;
+    out.push(r)}}return out}
+function renderTxns(){renderStrip();
+  if(!C.files.length){$('#txnArea').innerHTML=`<div class="empty">No files uploaded — manual totals are being used. <a href="#" data-go="files">Upload cash and bank CSVs</a> to review entries line by line.</div>`;return}
+  const c=D.tot.counts;
+  const rows=filteredRows(),PS=200,pages=Math.max(1,Math.ceil(rows.length/PS));TF.page=Math.min(TF.page,pages-1);
+  const view=rows.slice(TF.page*PS,TF.page*PS+PS);const fname={};C.files.forEach(f=>fname[f.id]=f);
+  $('#txnArea').innerHTML=`<div class="filters">
+    <label class="f">Source<select id="tfFile"><option value="">All files</option>${C.files.map(f=>`<option value="${f.id}"${TF.file===f.id?' selected':''}>${f.kind==='cash'?'Cash':'Bank'}: ${esc(f.name)}</option>`).join('')}</select></label>
+    <label class="f">Treatment<select id="tfSt"><option value="">All (${Object.values(c).reduce((a,b)=>a+b,0)})</option>${Object.keys(STL).map(k=>`<option value="${k}"${TF.st===k?' selected':''}>${STL[k]} (${c[k]||0})</option>`).join('')}<option value="ov"${TF.st==='ov'?' selected':''}>Changed by you (${Object.keys(C.ov).length})</option></select></label>
+    <label class="f grow">Search particulars / amount<input id="tfQ" value="${esc(TF.q)}" placeholder="e.g. self, ATM, 50000"></label>
+    <label class="f">Set all ${rows.length} filtered to<select id="tfBulk"><option value="">Choose…</option>${Object.keys(STL).map(k=>`<option value="${k}">${STL[k]}</option>`).join('')}<option value="auto">Automatic</option></select></label>
+  </div>
+  ${D.tot.useManual?'<div class="flag data"><b>Manual totals are switched on</b><p>The figures above come from step 2 manual totals; treatments below are not used until you switch manual totals off.</p></div>':''}
+  <p class="hint">Contra and own-account transfers are excluded from both sides of the 5% test. Mark a bank entry as <b>Deemed cash</b> where it was a bearer / non-account-payee cheque or draft — the provisos treat these as cash.</p>
+  <div class="tw"><table><thead><tr><th>Date</th><th>Source</th><th>Particulars</th><th>Vch type</th><th class="n">Receipt</th><th class="n">Payment</th><th>Treatment</th></tr></thead><tbody>
+  ${view.map(r=>{const f=fname[r.f],st=stOf(r.id),a=D.cls[r.id];return `<tr><td>${r.d?dOut(r.d):'<span class="tag">no date</span>'}</td><td><span class="tag">${f.kind==='cash'?'Cash':'Bank'}</span></td>
+    <td>${esc(r.narr)}${a.why&&!C.ov[r.id]?`<div class="why">${esc(a.why)}</div>`:''}${C.ov[r.id]?`<div class="why"><span class="tag ov">changed — auto: ${STL[a.a]}</span></div>`:''}</td><td>${esc(r.vt)}</td>
+    <td class="n">${r2(r.rec)}</td><td class="n">${r2(r.pay)}</td>
+    <td><select data-tx="${r.id}">${Object.keys(STL).filter(k=>k!=='cash'||f.kind==='bank').map(k=>`<option value="${k}"${st===k?' selected':''}>${STL[k]}</option>`).join('')}</select></td></tr>`}).join('')||'<tr><td colspan="7" class="muted">No entries match.</td></tr>'}
+  </tbody></table></div>
+  <div class="pager"><span>${rows.length} entries${pages>1?` · page ${TF.page+1} of ${pages}`:''}</span>${pages>1?`<button class="btn ghost sm" id="pgP"${TF.page?'':' disabled'}>Previous</button><button class="btn ghost sm" id="pgN"${TF.page<pages-1?'':' disabled'}>Next</button>`:''}</div>`;
+  $('#tfFile').onchange=e=>{TF.file=e.target.value;TF.page=0;renderTxns()};
+  $('#tfSt').onchange=e=>{TF.st=e.target.value;TF.page=0;renderTxns()};
+  let qt;$('#tfQ').oninput=e=>{clearTimeout(qt);qt=setTimeout(()=>{TF.q=e.target.value;TF.page=0;renderTxns();const q=$('#tfQ');q.focus();q.setSelectionRange(q.value.length,q.value.length)},300)};
+  $('#tfBulk').onchange=e=>{const v=e.target.value;if(!v)return;if(!confirm(`Apply "${v==='auto'?'Automatic':STL[v]}" to ${rows.length} entries?`)){e.target.value='';return}
+    rows.forEach(r=>{const f=fname[r.f];if(v==='cash'&&f.kind!=='bank')return;if(v==='auto'||D.cls[r.id].a===v)delete C.ov[r.id];else C.ov[r.id]=v});afterChange(true)};
+  $$('[data-tx]').forEach(s=>s.onchange=()=>{const id=s.dataset.tx;if(D.cls[id].a===s.value)delete C.ov[id];else C.ov[id]=s.value;afterChange(true)});
+  const p=$('#pgP'),n=$('#pgN');if(p)p.onclick=()=>{TF.page--;renderTxns()};if(n)n.onclick=()=>{TF.page++;renderTxns()}}
+
+/* ---------- UI: result ---------- */
+function exceptions(t){const g=(fld,min)=>{const m=new Map();
+    t.cashRows.forEach(r=>{if(!(r[fld]>0))return;const k=r.d+'|'+r.narr.toLowerCase().replace(/\s+/g,' ').slice(0,40);const o=m.get(k)||{d:r.d,narr:r.narr,amt:0,n:0};o.amt+=r[fld];o.n++;m.set(k,o)});
+    return[...m.values()].filter(o=>min(o.amt)).sort((a,b)=>b.amt-a.amt)};
+  return{pay:g('pay',a=>a>10000),rec:g('rec',a=>a>=200000)}}
+function renderResult(){const ev=D.ev,t=D.tot,th=ev.th;
+  const mk={x:'✗',ok:'✓',na:'–',i:'•'};
+  const entTxt=ENT[C.entity]+(C.resident?', resident':', non-resident');
+  const natTxt={business:'Business',spec_prof:'Specified profession',other_prof:'Other profession'}[C.nature];
+  $('#printHead').innerHTML=`<div style="display:flex;justify-content:space-between;border-bottom:2px solid #1D3A57;padding-bottom:8px;margin-bottom:14px"><div><div style="font:600 18px var(--serif)">BRS &amp; Associates, Chartered Accountants</div><div>Tax audit applicability working</div></div><div style="text-align:right">${esc(C.client)||'—'}${C.pan?'<br>PAN '+esc(C.pan):''}<br>FY ${C.fy}<br>Prepared ${new Date().toLocaleDateString('en-IN')}</div></div>`;
+  if(ev.status==='none'){$('#resultArea').innerHTML=`<div class="empty">Enter turnover / gross receipts on the <a href="#" data-go="case">Case details</a> step to see the result.</div>`;return}
+  const rec=t.cashR,recLim=0.05*t.totR,payLim=0.05*t.totP;
+  const ex=exceptions(t);
+  const months=Object.keys(t.months).sort();
+  const condR=t.cr==null?'<span class="muted">No data</span>':t.cr<=0.05?'<span class="ok-t">Within 5%</span>':'<span class="bad-t">Exceeds 5%</span>';
+  const condP=t.cp==null?'<span class="muted">No data</span>':t.cp<=0.05?'<span class="ok-t">Within 5%</span>':'<span class="bad-t">Exceeds 5%</span>';
+  const room=(c,lim)=>c<=lim?`headroom ${rs((lim-c)/0.95)}`:`over the limit by ${rs(c-lim)}`;
+  let calcHtml='';
+  if(ev.calc.kind==='ad'){const k=ev.calc;calcHtml=`<h3>Presumptive computation <small>${ev.R.ad}</small></h3>
+    <div class="tw"><table><thead><tr><th>Particulars</th><th class="n">Total</th><th class="n">Digital receipts (6%)</th><th class="n">Other (8%)</th></tr></thead><tbody>
+    <tr><td>Turnover</td><td class="n">${rs(ev.T)}</td><td class="n">${rs(k.Dg)}</td><td class="n">${rs(k.ND)}</td></tr>
+    <tr><td>Deemed profit</td><td class="n">${rs(k.deemed)}</td><td class="n">${rs(k.d6)}</td><td class="n">${rs(k.d8)}</td></tr>
+    <tr class="tot"><td>Profit declared</td><td class="n">${rs(ev.P)}</td><td class="n" colspan="2">${ev.P>=k.deemed-0.5?'<span class="ok-t">At or above deemed profit</span>':`<span class="bad-t">Short by ${rs(k.deemed-ev.P)}</span>`}</td></tr>
+    <tr><td>Turnover limit for presumptive</td><td class="n">${rs(k.adLimit)}</td><td colspan="2" class="muted">${th.adEnh?'₹3 crore where cash receipts ≤ 5%, else ₹2 crore':'₹2 crore'}</td></tr></tbody></table></div>`}
+  else if(ev.calc.kind==='ada'){const k=ev.calc;calcHtml=`<h3>Presumptive computation <small>${ev.R.ada}</small></h3>
+    <div class="tw"><table><thead><tr><th>Particulars</th><th class="n">Amount</th></tr></thead><tbody>
+    <tr><td>Gross receipts</td><td class="n">${rs(ev.T)}</td></tr><tr><td>Deemed profit (50%)</td><td class="n">${rs(k.deemed)}</td></tr>
+    <tr class="tot"><td>Profit declared</td><td class="n">${rs(ev.P)} ${ev.P>=k.deemed-0.5?'<span class="ok-t">✓</span>':`<span class="bad-t">short by ${rs(k.deemed-ev.P)}</span>`}</td></tr>
+    <tr><td>Receipts limit for presumptive</td><td class="n">${rs(k.lim)}</td></tr></tbody></table></div>`}
+  const exTbl=(arr,lbl)=>arr.length?`<div class="tw"><table><thead><tr><th>Date</th><th>Party / particulars</th><th class="n">Entries</th><th class="n">${lbl}</th></tr></thead><tbody>${arr.slice(0,60).map(o=>`<tr><td>${dOut(o.d)}</td><td>${esc(o.narr)}</td><td class="n">${o.n}</td><td class="n">${r2(o.amt)}</td></tr>`).join('')}${arr.length>60?`<tr><td colspan="4" class="muted">${arr.length-60} more — export CSV for the full list</td></tr>`:''}</tbody></table></div>`:'<p class="hint">None found.</p>';
+  $('#resultArea').innerHTML=`
+  <section class="verdict s-${ev.status}">
+    <div class="v-main"><p class="v-meta">${esc(C.client)||'Unnamed client'} — FY ${C.fy} — ${entTxt} — ${natTxt}</p>
+      <h2>${ev.head}</h2><p class="v-basis">${ev.basis}</p><p class="v-why">${ev.why}.</p></div>
+    <dl class="v-figs">
+      <div><dt>${C.nature==='business'?'Turnover':'Gross receipts'}</dt><dd>${rs(ev.T)}</dd></div>
+      <div><dt>Profit declared</dt><dd>${rs(ev.P)} <span class="muted" style="font-size:13px">${pct(ev.P/ev.T)}</span></dd></div>
+      <div><dt>Cash share of receipts</dt><dd>${pct(t.cr)}</dd></div>
+      <div><dt>Cash share of payments</dt><dd>${pct(t.cp)}</dd></div>
+      <div><dt>Total income</dt><dd>${rs(ev.TI)}</dd></div>
+      <div><dt>Basic exemption limit</dt><dd>${rs(ev.BEL)}</dd></div>
+    </dl>
+  </section>
+  <div class="two">
+    <div><h3 style="margin-top:0">Clause status</h3><div class="tw"><table><tbody>
+      <tr><td>${th.newAct?'s.63 Sl. 1(a)–(b) — business turnover':'s.44AB(a) — business turnover'}</td><td>${ev.grid.a||'–'}</td></tr>
+      <tr><td>${th.newAct?'s.63 Sl. 1(c) — professional receipts':'s.44AB(b) — professional receipts'}</td><td>${ev.grid.b||'–'}</td></tr>
+      <tr><td>${th.newAct?'s.58 — presumptive business':'s.44AD — presumptive business'}</td><td>${ev.grid.ad||'–'}</td></tr>
+      <tr><td>${th.newAct?'s.58 — presumptive profession':'s.44ADA — presumptive profession'}</td><td>${ev.grid.ada||'–'}</td></tr>
+      <tr><td>${th.newAct?'s.58(7)–(8) — five-year bar':'s.44AB(e) / 44AD(4) — five-year bar'}</td><td>${ev.grid.e||'–'}</td></tr>
+    </tbody></table></div></div>
+    <div><h3 style="margin-top:0">Points to note</h3>${ev.flags.length?ev.flags.map(f=>`<div class="flag ${f.k}"><b>${esc(f.t)}</b><p>${esc(f.x)}</p></div>`).join(''):'<p class="hint">No contested positions or data gaps for these inputs.</p>'}</div>
+  </div>
+
+  <h3>How this was decided</h3>
+  <div class="tw"><table><thead><tr><th class="tk"></th><th>Test</th><th>Provision</th><th class="n">Figures</th></tr></thead><tbody>
+    ${ev.trace.map(x=>`<tr><td class="tk ${x.m}">${mk[x.m]}</td><td>${esc(x.t)}</td><td class="muted">${esc(x.ref)}</td><td class="n">${esc(x.v)}</td></tr>`).join('')}
+    <tr class="tot"><td class="tk ${ev.status==='req'?'x':ev.status==='not'?'ok':'i'}">${ev.status==='req'?'✗':ev.status==='not'?'✓':'!'}</td><td colspan="3">${ev.head} — ${esc(ev.basis)}</td></tr>
+  </tbody></table></div>
+  <p class="legend">✓ does not trigger audit &nbsp; ✗ triggers or fails &nbsp; – not applicable &nbsp; • information</p>
+
+  <h3>Cash and bank test <small>${t.useManual?'from manual totals':'from uploaded files, net of contra'}</small></h3>
+  <div class="tw"><table><thead><tr><th>Particulars</th><th class="n">Cash</th><th class="n">Bank / other</th><th class="n">Total</th><th class="n">Cash %</th><th>Condition</th></tr></thead><tbody>
+    <tr><td>${C.nature==='business'?'Turnover / gross receipts':'Gross receipts'}</td><td class="n" colspan="3">${rs(ev.T)}</td><td></td><td class="muted">${C.nature==='business'?(ev.T>1e7?'Above ₹1 crore':'Within ₹1 crore'):(ev.T>5e6?'Above ₹50 lakh':'Within ₹50 lakh')}</td></tr>
+    <tr><td>Receipts</td><td class="n">${rs(t.cashR)}</td><td class="n">${rs(t.bankR)}</td><td class="n">${rs(t.totR)}</td><td class="n">${pct(t.cr)}</td><td>${condR}${t.totR?` <span class="muted">— ${room(t.cashR,recLim)}</span>`:''}</td></tr>
+    <tr><td>Payments</td><td class="n">${rs(t.cashP)}</td><td class="n">${rs(t.bankP)}</td><td class="n">${rs(t.totP)}</td><td class="n">${pct(t.cp)}</td><td>${condP}${t.totP?` <span class="muted">— ${room(t.cashP,payLim)}</span>`:''}</td></tr>
+  </tbody></table></div>
+  <p class="legend">Law: the test is "does not exceed 5%" of aggregate receipts / payments (all receipts and payments, not only sales and expenses). Headroom = further cash that keeps the ratio within 5%.</p>
+  ${calcHtml}
+  ${months.length?`<h3>Month-wise <small>included entries only</small></h3><div class="tw"><table><thead><tr><th>Month</th><th class="n">Cash receipts</th><th class="n">Bank receipts</th><th class="n">Cash %</th><th class="n">Cash payments</th><th class="n">Bank payments</th><th class="n">Cash %</th></tr></thead><tbody>
+    ${months.map(m=>{const M=t.months[m],a=M.cr+M.br,b=M.cp+M.bp;const nm=new Date(m+'-01T00:00:00').toLocaleDateString('en-IN',{month:'short',year:'numeric'});return `<tr><td>${nm}</td><td class="n">${rs(M.cr)}</td><td class="n">${rs(M.br)}</td><td class="n">${a?pct(M.cr/a):'–'}</td><td class="n">${rs(M.cp)}</td><td class="n">${rs(M.bp)}</td><td class="n">${b?pct(M.cp/b):'–'}</td></tr>`}).join('')}
+  </tbody></table></div>`:''}
+  ${C.files.length?`<h3>Cash entries to review <small>indicative — grouped by date and particulars</small></h3>
+  <div class="two"><div><p class="hint" style="margin-bottom:8px"><b>Cash payments above ₹10,000 in a day</b> — s.40A(3) [₹35,000 for plying / hiring / leasing goods carriages]. Relevant only for revenue expenditure.</p>${exTbl(ex.pay,'Paid')}</div>
+  <div><p class="hint" style="margin-bottom:8px"><b>Cash receipts of ₹2 lakh or more</b> — s.269ST (per person per day, per transaction or per event).</p>${exTbl(ex.rec,'Received')}</div></div>`:''}
+  ${C.loans.length?`<h3>Loan balances</h3><div class="tw"><table><thead><tr><th>Particulars</th><th class="n">Amount</th></tr></thead><tbody>${C.loans.map(l=>`<tr><td>${esc(l.name)}</td><td class="n">${rs(l.amt)}</td></tr>`).join('')}</tbody></table></div>`:''}
+  ${C.nature==='business'&&C.hist.some(h=>h.status||h.remarks)?`<h3>Presumptive history</h3><div class="tw"><table><thead><tr><th>FY</th><th>Treatment</th><th>Audit u/s / remarks</th></tr></thead><tbody>${C.hist.map((h,i)=>`<tr><td>${prevFY(C.fy,i+1)}</td><td>${{'':'Not recorded',pres:'Declared u/s 44AD',books:'Below deemed rate / opted out',na:'Not eligible / no business'}[h.status]}</td><td>${esc(h.remarks)}</td></tr>`).join('')}</tbody></table></div>`:''}
+  <h3>Scope and limits</h3>
+  <ul class="notes hint">
+    <li>Covers ${th.newAct?'s.63(1) Table Sl. 1–2 and s.58 of the Income-tax Act, 2025':'clauses (a), (b), (d), (e) and the first proviso of s.44AB, with ss.44AD and 44ADA'}. Goods carriage (s.44AE) and non-resident presumptive cases (ss.44BB / 44BBB) are not evaluated.</li>
+    <li>Where an assessee has both business and profession, run each separately — the turnover and receipts limits apply independently.</li>
+    <li>Cash ratios are only as good as the classification in step 3: contra and own-account transfers are excluded; loans, capital and advances received or repaid stay in, because the provisos speak of aggregate receipts and payments.</li>
+    <li>s.44ADA eligibility is taken as resident individual or firm (other than LLP) carrying on a profession specified u/s 44AA(1).</li>
+    <li>Thresholds by year: ₹5 crore enhanced limit for FY 2019-20, ₹10 crore from FY 2020-21; ₹3 crore (s.44AD) and ₹75 lakh (s.44ADA) from FY 2023-24 where cash receipts ≤ 5%.</li>
+  </ul>
+  <div class="print-only" style="margin-top:36px;display:none"><div style="display:flex;justify-content:space-between"><div>Prepared by: ____________________</div><div>Reviewed by: ____________________</div></div></div>
+  <div class="row no-print" style="margin-top:20px"><button class="btn ghost" data-go="txns">Back</button><span class="spacer"></span><button class="btn ghost" id="rCsv">Export transactions CSV</button><button class="btn" id="rPrint">Print / save as PDF</button></div>`;
+  $('#rPrint').onclick=doPrint;$('#rCsv').onclick=exportCsv}
+
+/* ---------- exports ---------- */
+function download(name,blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
+const safeName=()=>(C.client||'case').replace(/[^\w\-]+/g,'_')+'_FY'+C.fy;
+function exportCsv(){if(!C.files.length){toast('No uploaded entries to export.');return}
+  const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';const lines=[['Date','Source','File','Particulars','Vch type','Receipt','Payment','Treatment','Auto treatment','Reason'].map(q).join(',')];
+  for(const f of C.files)for(const r of f.rows){const a=D.cls[r.id];lines.push([r.d?dOut(r.d):r.ds,f.kind,f.name,r.narr,r.vt,r.rec||'',r.pay||'',STL[stOf(r.id)],STL[a.a],a.why].map(q).join(','))}
+  download(safeName()+'_transactions.csv',new Blob(['\uFEFF'+lines.join('\r\n')],{type:'text/csv'}))}
+function doPrint(){show('result');setTimeout(()=>window.print(),120)}
+$('#btnCsv').onclick=()=>{closeMenu();exportCsv()};
+$('#btnPrint').onclick=()=>{closeMenu();doPrint()};
+$('#btnExportJson').onclick=()=>{closeMenu();download(safeName()+'.json',new Blob([JSON.stringify(C)],{type:'application/json'}))};
+$('#btnImportJson').onclick=()=>{closeMenu();$('#importInp').click()};
+$('#importInp').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+  try{const c=JSON.parse(await f.text());if(!c||!c.id||!Array.isArray(c.files))throw 0;const b=blankCase();const merged=Object.assign(b,c,{interp:Object.assign(b.interp,c.interp||{}),manual:Object.assign(b.manual,c.manual||{})});
+    await DB.put(merged);await loadCase(merged.id);toast('Case imported')}catch(err){toast('Not a valid case file')}};
+$('#btnDel').onclick=async()=>{closeMenu();if(!confirm('Delete this case permanently?'))return;await DB.del(C.id);const all=await DB.all();
+  if(all.length){all.sort((a,b)=>b.updated-a.updated);await loadCase(all[0].id)}else{C=blankCase();await DB.put(C);await loadCase(C.id)}toast('Case deleted')};
+function closeMenu(){$('details.menu').open=false}
+document.addEventListener('click',e=>{const m=$('details.menu');if(m.open&&!m.contains(e.target))m.open=false});
+
+/* ---------- cases ---------- */
+let clT;function refreshCaseListSoon(){clearTimeout(clT);clT=setTimeout(refreshCaseList,500)}
+async function refreshCaseList(){const all=await DB.all();if(!all.find(x=>x.id===C.id))all.push(C);all.sort((a,b)=>b.updated-a.updated);
+  $('#caseSel').innerHTML=all.map(c=>{const n=c.id===C.id?C:c;return `<option value="${n.id}"${n.id===C.id?' selected':''}>${esc(n.client||'Untitled case')} (FY ${n.fy})</option>`}).join('')}
+async function loadCase(id){const c=await DB.get(id);if(!c)return;C=c;
+  C.interp=Object.assign({sl2:'conservative',p5075:'prevalent',anom:'literal'},C.interp||{});C.ov=C.ov||{};C.loans=C.loans||[];
+  while(C.hist.length<5)C.hist.push({status:'',remarks:''});
+  TF.file='';TF.st='';TF.q='';TF.page=0;
+  derive();fillCase();updateChip();await refreshCaseList();show('case')}
+$('#caseSel').onchange=e=>loadCase(e.target.value);
+$('#btnNew').onclick=async()=>{const c=blankCase();await DB.put(c);await loadCase(c.id);$('[data-k="client"]').focus()};
+
+/* ---------- boot ---------- */
+(async()=>{initCaseUI();await DB.open();
+  if(!DB.ok)toast('Browser storage unavailable — work will not persist. Use Export case file.');
+  const all=await DB.all();
+  if(all.length){all.sort((a,b)=>b.updated-a.updated);await loadCase(all[0].id)}
+  else{C=blankCase();await DB.put(C);await loadCase(C.id)}})();
+</script>
+</body>
+</html>
