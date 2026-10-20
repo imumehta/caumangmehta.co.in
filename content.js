@@ -94,8 +94,12 @@ window.PROFILE = {
   socials: [
     { icon: "email",     label: "Email",     handle: "umang.mehta@mail.ca.in", url: "mailto:umang.mehta@mail.ca.in" },
     { icon: "linkedin",  label: "LinkedIn",  handle: "ca-umang-mehta", url: "https://www.linkedin.com/in/ca-umang-mehta" },
-    { icon: "instagram", label: "Instagram", handle: "@imumehta",      url: "https://www.instagram.com/imumehta/" },
+    { icon: "instagram", label: "Instagram", handle: "@mehtaknowstech", url: "https://www.instagram.com/mehtaknowstech/" },
+    { icon: "instagram", label: "Instagram (personal)", handle: "@imumehta", url: "https://www.instagram.com/imumehta/" },
     { icon: "x",         label: "X",         handle: "@imumehta",      url: "https://x.com/imumehta" },
-    { icon: "github",    label: "GitHub",    handle: "imumehta",       url: "https://github.com/imumehta" }
+    { icon: "snapchat",  label: "Snapchat",  handle: "imumehta",       url: "https://www.snapchat.com/add/imumehta" },
+    { icon: "github",    label: "GitHub",    handle: "imumehta",       url: "https://github.com/imumehta" },
+    { icon: "tool",      label: "CA Toolkit", handle: "Free offline tools for CAs", url: "https://imumehta.github.io/ca-toolkit/" },
+    { icon: "link",      label: "AllMyLinks", handle: "allmylinks.com/imumehta", url: "https://allmylinks.com/imumehta" }
   ]
 };
