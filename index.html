@@ -288,8 +288,9 @@
 
 <section id="tools" class="alt" hidden>
   <div class="wrap">
-    <div class="sec-head"><div class="eyebrow">Tools</div><h2>Free professional tools</h2><p>Browser-based tools I've built for everyday compliance work. They run entirely in your browser, and no data is uploaded.</p></div>
+    <div class="sec-head"><div class="eyebrow">Tools</div><h2>Free professional tools</h2><p>Free, offline, privacy-first tools I've built for Chartered Accountants and finance teams. Nothing is uploaded.</p></div>
     <div class="grid3" id="toolList"></div>
+    <p style="margin-top:24px"><a class="btn ghost" id="toolkitLink" href="#" target="_blank" rel="noopener">View all tools on CA Toolkit →</a></p>
   </div>
 </section>
 
@@ -365,16 +366,37 @@
       <div><h3>${esc(c.name)}</h3><p>${esc(c.tagline)}</p><span>Follow on WhatsApp →</span></div>
     </a>`).join("");
 
-  if (P.tools && P.tools.length) {
+  if (P.toolkit) {
+    const T = P.toolkit;
+    const md = (t) => t.replace(/\*\*|\*|`/g, "").trim();
+    $("toolkitLink").href = T.site;
     $("tools").hidden = false;
     $("navTools").hidden = false;
-    $("toolList").innerHTML = P.tools.map((t) => `
-      <a class="svc tool" href="${esc(t.file)}" target="_blank" rel="noopener">
-        <div class="tl-date">${esc(t.tag || "Tool")}</div>
+    fetch(`https://raw.githubusercontent.com/${T.repo}/${T.branch}/README.md`, { cache: "no-cache" })
+      .then((r) => (r.ok ? r.text() : Promise.reject()))
+      .then((readme) => {
+        const sec = readme.split(/^## .*Tools\s*$/m)[1] || "";
+        const table = sec.split(/^---|^## /m)[0];
+        const tools = [];
+        table.split(/\r?\n/).forEach((line) => {
+          const c = line.split("|").map((x) => x.trim());
+          const m = c[2] && c[2].match(/\[(.+?)\]\((.+?)\)/);
+          if (!m) return;
+          const folder = m[2].replace(/^\.\//, "");
+          const type = md(c[3] || "");
+          const url = /html/i.test(type) ? T.site + folder : `https://github.com/${T.repo}/tree/${T.branch}/${folder}`;
+          tools.push({ no: c[1], name: md(m[1]), type, description: md(c[4] || ""), url });
+        });
+        if (!tools.length) return;
+        $("toolList").innerHTML = tools.map((t) => `
+      <a class="svc tool" href="${esc(t.url)}" target="_blank" rel="noopener">
+        <div class="tl-date">Tool ${esc(t.no)}${t.type ? " · " + esc(t.type) : ""}</div>
         <h3>${esc(t.name)}</h3>
         <p>${esc(t.description)}</p>
         <span>Open tool →</span>
       </a>`).join("");
+      })
+      .catch(() => {});
   }
 
   $("posts").innerHTML = P.posts.map((p) => `
