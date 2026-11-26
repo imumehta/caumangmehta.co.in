@@ -84,9 +84,17 @@ window.PROFILE = {
   // so any tool added there shows up here automatically.
   toolkit: { repo: "imumehta/ca-toolkit", branch: "main", site: "https://imumehta.github.io/ca-toolkit/" },
 
-  // Latest Instagram posts, shown under Community. "feed" is the JSON feed URL from
-  // behold.so (connected to the account below). The section stays hidden while it is empty.
-  instagram: { handle: "mehtaknowstech", feed: "", count: 3 },
+  // Latest Instagram posts, shown under Community. If "feed" (a behold.so JSON feed URL)
+  // is set, the newest posts load automatically. Otherwise the links in "posts" are shown,
+  // newest first: add a new post's link at the top of the list.
+  instagram: {
+    handle: "mehtaknowstech", feed: "", count: 3,
+    posts: [
+      "https://www.instagram.com/p/DgMrZtyFoC5/",
+      "https://www.instagram.com/reel/DgDBGLARWgC/",
+      "https://www.instagram.com/reel/De_lmzcRPnu/"
+    ]
+  },
 
   channels: [
     { name: "Excelenation – by Umang Mehta", tagline: "Let's make Excel use smart. Practical Excel tips and shortcuts.",
