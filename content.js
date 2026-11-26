@@ -45,14 +45,14 @@ window.PROFILE = {
   now: [
     { title: "Partner at BRS & Associates", text: "Leading audit, internal controls and advisory engagements for businesses across industries." },
     { title: "Studying law", text: "Pursuing an LL.B. at Saurashtra University, Rajkot (2026–2028)." },
-    { title: "Teaching Excel & AI", text: "Presented “Hero to Superhero”, an Excel and VBA session, at TechSmart 2026 for ICAI Jamnagar Branch." },
+    { title: "Teaching Excel automation", text: "Taught Excel automation with VBA and Power Query at Techsmart 2026: Data, Automation & AI, Jamnagar Branch of WIRC of ICAI." },
     { title: "Building on the side", text: "Small, free, offline tools for CAs, shared under @mehtaknowstech." }
   ],
 
   // ── Journey highlights (home page). Newest first ────────────
   milestones: [
     { year: "2026", text: "Became Partner at BRS & Associates, received my CA membership at the ICAI Convocation, and started an LL.B." },
-    { year: "2026", text: "Began sharing free, offline tools for CAs, and presented at TechSmart 2026." },
+    { year: "2026", text: "Began sharing free, offline tools for CAs, and taught at Techsmart 2026." },
     { year: "2019", text: "Became Audit Manager, leading statutory, internal and tax audits. Spoke at the CA Students' Conference." },
     { year: "2018", text: "Completed articleship and B.Com, and worked briefly with Sonecha & Amlani." },
     { year: "2015", text: "Joined BRS & Associates as an article assistant." }
@@ -102,7 +102,7 @@ window.PROFILE = {
 
   // ── Speaking & teaching. Newest first. "img" is optional ────
   speaking: [
-    { date: "Nov 2026", title: "Hero to Superhero: Excel & VBA for CAs", org: "TechSmart 2026 · ICAI Jamnagar Branch" },
+    { date: "Nov 2026", title: "Hero to Superhero: Excel automation with VBA & Power Query", org: "Techsmart 2026: Data, Automation & AI · Jamnagar Branch of WIRC of ICAI", img: "img/techsmart-2026.jpg" },
     { date: "2026", title: "Faculty at an ICAI programme", org: "The Institute of Chartered Accountants of India", img: "img/icai-faculty.jpg" },
     { date: "2026", title: "Session for members", org: "Jamnagar Branch of WIRC of ICAI", img: "img/jamnagar-branch-talk.jpg" },
     { date: "2019", title: "Speaker, CA Students' Conference", org: "ICAI", img: "img/ca-students-conference-2019.jpg" }
