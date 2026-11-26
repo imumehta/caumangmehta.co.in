@@ -42,7 +42,7 @@ Also change `lastUpdated` at the top to today's date.
 
 ## Things that update by themselves
 
-- **Tools:** read live from the Tools table in the `ca-toolkit` README. Add a tool there and it appears on both pages, and the tool count goes up.
+- **Tools:** read live from the Tools table in the `ca-toolkit` README. Add a tool there and it appears on both pages.
 - **Year in the footer.**
 
 ## Uploading a new photo

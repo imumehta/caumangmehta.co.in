@@ -19,7 +19,7 @@ window.PROFILE = {
   // A one-line belief, shown large on the home page
   quote: "Finance should help people decide, not just comply.",
 
-  intro: "Partner at BRS & Associates. Nearly a decade in audit, financial governance, risk management and business advisory, helping organisations build stronger financial foundations.",
+  intro: "Partner at BRS & Associates, working in audit, financial governance, risk management and business advisory, helping organisations build stronger financial foundations.",
 
   // ── A note from me (home page, first person) ────────────────
   note: [
@@ -31,15 +31,7 @@ window.PROFILE = {
   signature: "Umang",
 
   // Profile-page summary (third person reads more formal on a CV)
-  summary: "Chartered Accountant and Partner at BRS & Associates, Jamnagar, with over ten years in statutory, internal and tax audit, internal financial controls, risk management and business advisory. Has led engagements across manufacturing, jewellery, logistics, petroleum transportation, healthcare, trading and non-profit organisations, supervising audit teams from planning through review. Regular speaker and faculty at ICAI programmes on Excel, automation and AI in practice, and currently pursuing an LL.B.",
-
-  // ── Numbers strip. Use "{tools}" to show the live tool count ─
-  stats: [
-    { value: "10+",     label: "Years in practice" },
-    { value: "6",       label: "Industries served" },
-    { value: "{tools}", label: "Free tools for CAs" },
-    { value: "2015",    label: "With BRS & Associates since" }
-  ],
+  summary: "Chartered Accountant and Partner at BRS & Associates, Jamnagar, working in statutory, internal and tax audit, internal financial controls, risk management and business advisory. Has led engagements across manufacturing, jewellery, logistics, petroleum transportation, healthcare, trading and non-profit organisations, supervising audit teams from planning through review. Regular speaker and faculty at ICAI programmes on Excel, automation and AI in practice, and currently pursuing an LL.B.",
 
   // ── What I'm doing now ──────────────────────────────────────
   now: [
@@ -52,8 +44,8 @@ window.PROFILE = {
   // ── Journey highlights (home page). Newest first ────────────
   milestones: [
     { year: "2026", text: "Became Partner at BRS & Associates, received my CA membership at the ICAI Convocation, and started an LL.B." },
-    { year: "2026", text: "Began sharing free, offline tools for CAs, and taught at Techsmart 2026." },
-    { year: "2019", text: "Became Audit Manager, leading statutory, internal and tax audits. Spoke at the CA Students' Conference." },
+    { year: "2026", text: "Conducted the Excelenation Workshop at the Jamnagar Branch of WIRC of ICAI, taught at Techsmart 2026, and began sharing free, offline tools for CAs." },
+    { year: "2019", text: "Became Audit Manager, leading statutory, internal and tax audits." },
     { year: "2018", text: "Completed articleship and B.Com, and worked briefly with Sonecha & Amlani." },
     { year: "2015", text: "Joined BRS & Associates as an article assistant." }
   ],
@@ -103,16 +95,15 @@ window.PROFILE = {
   // ── Speaking & teaching. Newest first. "img" is optional ────
   speaking: [
     { date: "Nov 2026", title: "Hero to Superhero: Excel automation with VBA & Power Query", org: "Techsmart 2026: Data, Automation & AI · Jamnagar Branch of WIRC of ICAI", img: "img/techsmart-2026.jpg" },
-    { date: "2026", title: "Faculty at an ICAI programme", org: "The Institute of Chartered Accountants of India", img: "img/icai-faculty.jpg" },
-    { date: "2026", title: "Session for members", org: "Jamnagar Branch of WIRC of ICAI", img: "img/jamnagar-branch-talk.jpg" },
-    { date: "2019", title: "Speaker, CA Students' Conference", org: "ICAI", img: "img/ca-students-conference-2019.jpg" }
+    { date: "May 2026", title: "Excelenation Workshop: Excel ODBC & Financial Statements", org: "Faculty · Jamnagar Branch of WIRC of ICAI", img: "img/icai-faculty.jpg" },
+    { date: "2026", title: "Session for members", org: "Jamnagar Branch of WIRC of ICAI", img: "img/jamnagar-branch-talk.jpg" }
   ],
 
   // ── Photo gallery (home page) ───────────────────────────────
   gallery: [
     { src: "img/icai-convocation-2026.jpg", caption: "ICAI Convocation, Ahmedabad · May 2026" },
-    { src: "img/icai-faculty.jpg", caption: "Faculty at an ICAI programme" },
-    { src: "img/ca-students-conference-2019.jpg", caption: "Speaker, CA Students' Conference 2019" },
+    { src: "img/icai-faculty.jpg", caption: "Excelenation Workshop, Jamnagar Branch of WIRC of ICAI · May 2026" },
+    { src: "img/techsmart-2026.jpg", caption: "Techsmart 2026, Jamnagar Branch of WIRC of ICAI · Nov 2026" },
     { src: "img/jamnagar-branch-talk.jpg", caption: "Session at Jamnagar Branch of WIRC of ICAI" },
     { src: "img/casual.jpg", caption: "Off the clock" }
   ],
